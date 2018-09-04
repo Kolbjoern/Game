@@ -1,7 +1,7 @@
 CPP=g++
 CPPFLAGS=-Iinclude -Llibs
-CPP_FILES=src/main.cpp
+CPP_FILES=src/main.cpp src/Server.cpp src/Client.cpp src/utils/LoopTimer.cpp
 LIB_FILES=-lsfml-system -lsfml-window -lsfml-graphics -lsfml-network
 
-GameClient: src/main.cpp
-	$(CPP) $(CPPFLAGS) -o release/GameClient $(CPP_FILES) $(LIB_FILES)
+Game: src/main.cpp
+	$(CPP) $(CPPFLAGS) -o release/Game $(CPP_FILES) $(LIB_FILES)

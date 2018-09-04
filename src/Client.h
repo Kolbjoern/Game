@@ -2,10 +2,11 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Network.hpp>
 
 #include "utils/LoopTimer.h"
 
-class Game
+class Client
 {
 	public:
 		void run();
@@ -14,11 +15,12 @@ class Game
 		void init();
 		void handleInput();
 		void update(float deltaTime);
-		//void update
 		void render();
 
 		sf::RenderWindow m_window;
 		sf::CircleShape m_body;
+		sf::UdpSocket m_socket;
+		sf::IpAddress m_serverIp;
 
 		LoopTimer m_loopTimer;
 };

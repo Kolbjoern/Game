@@ -1,9 +1,11 @@
 #include <iostream>
+#include <string>
 
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
 
-#include "Game.h"
+#include "Server.h"
+#include "Client.h"
 
 #define PORTNUM 9966
 #define MAX_BUFFER_LEN 500
@@ -33,9 +35,23 @@ void receive(sf::UdpSocket *sock)
 
 int main(int argv, char* argc[])
 {
+	std::cout << "(1) Server" << std::endl;
+	std::cout << "(2) Client" << std::endl;
+	
+	std::string input;
+	std::getline(std::cin, input);
 
-	Game game;
-	game.run();
+	if (input == "1")
+	{
+		Server server;
+		server.run();
+	}
+	else
+	{
+		Client client;
+		client.run();
+	}
+
 	/*
 
 	sf::UdpSocket socket;
