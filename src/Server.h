@@ -28,11 +28,13 @@ class Server
 		void update(float deltaTime);
 
 		void registerClient(sf::IpAddress address, unsigned short port);
+		void registerAction(sf::IpAddress address, unsigned short port, std::string action);
 
 		std::unordered_map<std::string, struct ClientInfo> m_clients;
 		std::vector<std::pair<int, std::string>> m_actions;
 
 		sf::UdpSocket m_socket;
+		sf::Packet m_packet;
 
 		int idCounter;
 		LoopTimer m_loopTimer;

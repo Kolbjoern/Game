@@ -5,9 +5,6 @@
 
 #include <iostream>
 
-#define MAX_BUFFER 500
-#define SERVER_PORT 9966
-
 void Client::run()
 {
 	init();
@@ -39,19 +36,23 @@ void Client::init()
 	m_serverIp = input;//"10.0.0.52"
 
 	//register to server
-	m_socket.send("REGISTER", 8, m_serverIp, 9966);
+	sf::Uint8 header = 0;//"REGISTER";
+	m_packet << header;
+	m_socket.send(m_packet, m_serverIp, 9966);
+	m_packet.clear();
 
 	//waiting for server to register us
-	char buffer[MAX_BUFFER];
-	std::size_t messageSize;
 	sf::IpAddress sender;
 	unsigned short port;
-	status = m_socket.receive(buffer, MAX_BUFFER, messageSize, sender, port);
+	std::cout << "waiting for response..." << std::endl;
+	status = m_socket.receive(m_packet, sender, port);
 	if (status != sf::Socket::Done)
 		std::cout << "Could not register to server" << std::endl;
 
-	buffer[messageSize] = '\0';
-	std::cout << buffer << std::endl;
+	std::string clientId;
+	m_packet >> clientId;
+	std::cout << clientId << std::endl;
+	m_packet.clear();
 
 	m_window.create(sf::VideoMode(1200, 800), "Window 1337");
 	m_window.setFramerateLimit(60.0f);
@@ -88,7 +89,12 @@ void Client::handleInput()
 					action = "DOWN";
 
 				std::cout << "send: " << action << " port: " << m_socket.getLocalPort() << std::endl;
-				m_socket.send(action.c_str(), 8, m_serverIp, 9966);
+
+				sf::Uint8 header = 1;//"ACTION";
+				std::string content = action;
+				m_packet << header << content;
+				m_socket.send(m_packet, m_serverIp, 9966);
+				m_packet.clear();
 				break;
 		}
 	}

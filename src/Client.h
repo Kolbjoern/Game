@@ -21,6 +21,7 @@ class Client
 		sf::CircleShape m_body;
 		sf::UdpSocket m_socket;
 		sf::IpAddress m_serverIp;
+		sf::Packet m_packet;
 
 		LoopTimer m_loopTimer;
 };

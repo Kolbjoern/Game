@@ -3,7 +3,6 @@
 #include <iostream>
 
 #define PORTNUM 9966
-#define MAX_BUFFER 500
 
 void Server::run()
 {
@@ -40,34 +39,30 @@ void Server::receive()
 {
 	sf::IpAddress sender;
 	unsigned short port;
-	char buffer[MAX_BUFFER];
-	std::size_t messageSize;
-	std::string message;
+	sf::Uint8 header;
+	std::string content;
 
 	// empty receive buffer
-	while (m_socket.receive(buffer, MAX_BUFFER, messageSize, sender, port) == sf::Socket::Done)
+	while (m_socket.receive(m_packet, sender, port) == sf::Socket::Done)
 	{
-		buffer[messageSize] = '\0';
-		message = buffer;
+		m_packet >> header;
 
-		//TODO init this another place before the games starts
-		if (message == "REGISTER")
-			registerClient(sender, port);
-
-		if (message == "RIGHT" || message == "LEFT" || message == "UP" || message == "DOWN")
+		switch (header)
 		{
-			std::string clientId = sender.toString() + ":" + std::to_string(port);
+			// REGISTRATION
+			// TODO: init registration before the game starts
+			case 0:
+				registerClient(sender, port);
+				break;
 
-			std::cout << clientId << " - " << message << std::endl;
-
-			std::unordered_map<std::string, struct ClientInfo>::const_iterator client = m_clients.find(clientId);
-
-			if (client != m_clients.end())
-			{
-				std::pair<int, std::string> action (client->second.id, message);
-				m_actions.push_back(action);
-			}
+			// ACTION
+			case 1:
+				m_packet >> content;
+				registerAction(sender, port, content);
+				break;
 		}
+
+		m_packet.clear();
 	}
 }
 
@@ -89,7 +84,24 @@ void Server::registerClient(sf::IpAddress address, unsigned short port)
 		
 		// send registration info back
 		std::string clientId = std::to_string(client.id);
-		m_socket.send(clientId.c_str(), clientId.length(), client.address, client.port);
+		m_packet << clientId;
+		m_socket.send(m_packet, client.address, client.port);
+		m_packet.clear();
+	}
+}
+
+void Server::registerAction(sf::IpAddress address, unsigned short port, std::string action)
+{
+	if (action != "RIGHT" && action != "LEFT" && action != "UP" && action != "DOWN")
+		return;
+
+	std::string clientId = address.toString() + ":" + std::to_string(port);
+	std::cout << clientId << " - " << action << std::endl;
+	std::unordered_map<std::string, struct ClientInfo>::const_iterator client = m_clients.find(clientId);
+	if (client != m_clients.end())
+	{
+		std::pair<int, std::string> clientAction (client->second.id, action);
+		m_actions.push_back(clientAction);
 	}
 }
 
