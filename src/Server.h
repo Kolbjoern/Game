@@ -11,9 +11,13 @@
 
 struct ClientInfo
 {
-	int id;
+	int objectId;
 	sf::IpAddress address;
 	unsigned short port;
+};
+
+struct Object
+{
 	sf::Vector2f position;
 };
 
@@ -31,11 +35,12 @@ class Server
 		void registerAction(sf::IpAddress address, unsigned short port, std::string action);
 
 		std::unordered_map<std::string, struct ClientInfo> m_clients;
+		std::unordered_map<int, struct Object> m_objects;
 		std::vector<std::pair<int, std::string>> m_actions;
+		int m_currentObjectId;
 
 		sf::UdpSocket m_socket;
 		sf::Packet m_packet;
 
-		int idCounter;
 		LoopTimer m_loopTimer;
 };

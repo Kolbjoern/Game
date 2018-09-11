@@ -21,7 +21,7 @@ void Server::run()
 
 void Server::init()
 {
-	idCounter = 0;
+	m_currentObjectId = 0;
 	m_socket.setBlocking(false);
 
 	if (m_socket.bind(PORTNUM) != sf::Socket::Done)
@@ -73,17 +73,20 @@ void Server::registerClient(sf::IpAddress address, unsigned short port)
 	if (m_clients.find(newClient) == m_clients.end())
 	{
 		ClientInfo client;
-		client.id = idCounter++;
-		client.position.x = 0.0f;
-		client.position.y = 0.0f;
+		client.objectId = m_currentObjectId++;
 		client.port = port;
 		client.address = address;
-
 		m_clients.emplace(newClient, client);
+
+		Object object;
+		object.position.x = 0.0f;
+		object.position.y = 0.0f;
+		m_objects.emplace(client.objectId, object);
+
 		std::cout << "New client added: " << newClient << std::endl;
 		
 		// send registration info back
-		std::string clientId = std::to_string(client.id);
+		std::string clientId = std::to_string(client.objectId);
 		m_packet << clientId;
 		m_socket.send(m_packet, client.address, client.port);
 		m_packet.clear();
@@ -100,7 +103,7 @@ void Server::registerAction(sf::IpAddress address, unsigned short port, std::str
 	std::unordered_map<std::string, struct ClientInfo>::const_iterator client = m_clients.find(clientId);
 	if (client != m_clients.end())
 	{
-		std::pair<int, std::string> clientAction (client->second.id, action);
+		std::pair<int, std::string> clientAction (client->second.objectId, action);
 		m_actions.push_back(clientAction);
 	}
 }
@@ -110,24 +113,29 @@ void Server::update(float deltaTime)
 	// need better iterator?
 	for (int i = 0; i < m_actions.size(); i++)
 	{
-		std::cout << m_actions[i].first << " did: " << m_actions[i].second << std::endl;
+		//std::cout << m_actions[i].first << " did: " << m_actions[i].second << std::endl;
+		int objectId = m_actions[i].first;
+		std::string action = m_actions[i].second;
 		m_actions[i] = m_actions.back();
 		m_actions.pop_back();
 
+		static const float MOVE_ACCELERATION = 50.0f;
+		sf::Vector2f newPos = m_objects[objectId].position;
+
+		if (action == "LEFT")
+			newPos.x -= MOVE_ACCELERATION * deltaTime;
+
+		if (action == "RIGHT")
+			newPos.x += MOVE_ACCELERATION * deltaTime;
+
+		if (action == "UP")
+			newPos.y -= MOVE_ACCELERATION * deltaTime;
+
+		if (action == "DOWN")
+			newPos.y += MOVE_ACCELERATION * deltaTime;
+
+		m_objects[objectId].position = newPos;
+
+		std::cout << "newPos - x:: " << newPos.x << " y:: " << newPos.y << std::endl; 
 	}
-	/*static const float MOVE_ACCELERATION = 500.0f;
-	sf::Vector2f newPos = m_body.getPosition();
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		newPos.x -= MOVE_ACCELERATION * deltaTime;
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		newPos.x += MOVE_ACCELERATION * deltaTime;
-	
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		newPos.y -= MOVE_ACCELERATION * deltaTime;
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		newPos.y += MOVE_ACCELERATION * deltaTime
-		*/
 }
