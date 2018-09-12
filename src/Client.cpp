@@ -15,6 +15,7 @@ void Client::run()
 
 		handleInput();
 		update(m_loopTimer.getDeltaTime());
+		receive();
 		render();
 	}
 }
@@ -57,10 +58,9 @@ void Client::init()
 	m_window.create(sf::VideoMode(1200, 800), "Window 1337");
 	m_window.setFramerateLimit(60.0f);
 
-	m_loopTimer.init();
+	m_socket.setBlocking(false);
 
-	m_body.setRadius(50.0f);
-	m_body.setFillColor(sf::Color(100, 250, 50));
+	m_loopTimer.init();
 }
 
 void Client::handleInput()
@@ -105,9 +105,42 @@ void Client::update(float deltaTime)
 	
 }
 
+void Client::receive()
+{
+	sf::IpAddress sender;
+	unsigned short port;
+	sf::Uint8 header;
+	int objectId;
+	float xPos;
+	float yPos;
+
+	while (m_socket.receive(m_packet, sender, port) == sf::Socket::Done)
+	{
+		m_packet >> header;
+
+		switch (header)
+		{
+			// DRAWABLE
+			case 3:
+				m_packet >> objectId >> xPos >> yPos;
+				m_drawableObjects[objectId] = sf::Vector2f(xPos, yPos);
+				break;
+		}
+	}
+}
+
 void Client::render()
 {
 	m_window.clear();
-	m_window.draw(m_body);
+
+	sf::CircleShape body;
+	body.setRadius(50.0f);
+	body.setFillColor(sf::Color(100, 250, 50));
+	for (auto obj : m_drawableObjects)
+	{
+		body.setPosition(obj.second);
+		m_window.draw(body);
+	}
+
 	m_window.display();
 }

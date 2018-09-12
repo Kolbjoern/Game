@@ -138,4 +138,16 @@ void Server::update(float deltaTime)
 
 		std::cout << "newPos - x:: " << newPos.x << " y:: " << newPos.y << std::endl; 
 	}
+
+	sf::Uint8 header = 3;//"DRAWABLE"
+	for (auto object : m_objects)
+	{
+		for (auto client : m_clients)
+		{
+			// send whole list of objects in one package?
+			m_packet << header << object.first << object.second.position.x << object.second.position.y;
+			m_socket.send(m_packet, client.second.address, client.second.port);
+			m_packet.clear();
+		}
+	}
 }
