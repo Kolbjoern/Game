@@ -40,7 +40,6 @@ void Server::receive()
 	sf::IpAddress sender;
 	unsigned short port;
 	sf::Uint8 header;
-	std::string content;
 
 	// empty receive buffer
 	while (m_socket.receive(m_packet, sender, port) == sf::Socket::Done)
@@ -55,10 +54,11 @@ void Server::receive()
 				registerClient(sender, port);
 				break;
 
-			// ACTION
+			// MOVE
 			case 1:
-				m_packet >> content;
-				registerAction(sender, port, content);
+				sf::Vector2f moved;
+				m_packet >> moved.x >> moved.y;
+				registerAction(sender, port, moved);
 				break;
 		}
 
@@ -93,17 +93,13 @@ void Server::registerClient(sf::IpAddress address, unsigned short port)
 	}
 }
 
-void Server::registerAction(sf::IpAddress address, unsigned short port, std::string action)
+void Server::registerAction(sf::IpAddress address, unsigned short port, sf::Vector2f moved)
 {
-	if (action != "RIGHT" && action != "LEFT" && action != "UP" && action != "DOWN")
-		return;
-
 	std::string clientId = address.toString() + ":" + std::to_string(port);
-	std::cout << clientId << " - " << action << std::endl;
 	std::unordered_map<std::string, struct ClientInfo>::const_iterator client = m_clients.find(clientId);
 	if (client != m_clients.end())
 	{
-		std::pair<int, std::string> clientAction (client->second.objectId, action);
+		std::pair<int, sf::Vector2f> clientAction (client->second.objectId, moved);
 		m_actions.push_back(clientAction);
 	}
 }
@@ -115,28 +111,19 @@ void Server::update(float deltaTime)
 	{
 		//std::cout << m_actions[i].first << " did: " << m_actions[i].second << std::endl;
 		int objectId = m_actions[i].first;
-		std::string action = m_actions[i].second;
+		sf::Vector2f moved = m_actions[i].second;
 		m_actions[i] = m_actions.back();
 		m_actions.pop_back();
 
-		static const float MOVE_ACCELERATION = 50.0f;
 		sf::Vector2f newPos = m_objects[objectId].position;
+		newPos.x += moved.x;
+		newPos.y += moved.y;
 
-		if (action == "LEFT")
-			newPos.x -= MOVE_ACCELERATION * deltaTime;
-
-		if (action == "RIGHT")
-			newPos.x += MOVE_ACCELERATION * deltaTime;
-
-		if (action == "UP")
-			newPos.y -= MOVE_ACCELERATION * deltaTime;
-
-		if (action == "DOWN")
-			newPos.y += MOVE_ACCELERATION * deltaTime;
+		// VALIDATE
 
 		m_objects[objectId].position = newPos;
 
-		std::cout << "newPos - x:: " << newPos.x << " y:: " << newPos.y << std::endl; 
+		std::cout << objectId << " newPos - x:: " << newPos.x << " y:: " << newPos.y << std::endl; 
 	}
 
 	sf::Uint8 header = 3;//"DRAWABLE"

@@ -32,11 +32,11 @@ class Server
 		void update(float deltaTime);
 
 		void registerClient(sf::IpAddress address, unsigned short port);
-		void registerAction(sf::IpAddress address, unsigned short port, std::string action);
+		void registerAction(sf::IpAddress address, unsigned short port, sf::Vector2f moved);
 
 		std::unordered_map<std::string, struct ClientInfo> m_clients;
 		std::unordered_map<int, struct Object> m_objects;
-		std::vector<std::pair<int, std::string>> m_actions;
+		std::vector<std::pair<int, sf::Vector2f>> m_actions;
 		int m_currentObjectId;
 
 		sf::UdpSocket m_socket;

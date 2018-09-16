@@ -73,36 +73,34 @@ void Client::handleInput()
 			case sf::Event::Closed:
 				m_window.close();
 				break;
-
-			case sf::Event::KeyPressed:
-				std::string action = "";
-				if (event.key.code == sf::Keyboard::A)
-					action = "LEFT";
-
-				if (event.key.code == sf::Keyboard::D)
-					action = "RIGHT";
-
-				if (event.key.code == sf::Keyboard::W)
-					action = "UP";
-
-				if (event.key.code == sf::Keyboard::S)
-					action = "DOWN";
-
-				std::cout << "send: " << action << " port: " << m_socket.getLocalPort() << std::endl;
-
-				sf::Uint8 header = 1;//"ACTION";
-				std::string content = action;
-				m_packet << header << content;
-				m_socket.send(m_packet, m_serverIp, 9966);
-				m_packet.clear();
-				break;
 		}
 	}
 }
 
 void Client::update(float deltaTime)
 {
-	
+	static const float MOVE_ACCELERATION = 500.0f;
+	sf::Vector2f newAcceleration(0.0f, 0.0f);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		newAcceleration.x -= MOVE_ACCELERATION * deltaTime;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		newAcceleration.x += MOVE_ACCELERATION * deltaTime;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		newAcceleration.y -= MOVE_ACCELERATION * deltaTime;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		newAcceleration.y += MOVE_ACCELERATION * deltaTime;
+
+	if (newAcceleration.x != 0 || newAcceleration.y != 0)
+	{
+		sf::Uint8 header = 1;//"MOVE";
+		m_packet << header << newAcceleration.x << newAcceleration.y;
+		m_socket.send(m_packet, m_serverIp, 9966);
+		m_packet.clear();
+	}
 }
 
 void Client::receive()
