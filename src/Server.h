@@ -19,6 +19,7 @@ struct ClientInfo
 struct Object
 {
 	sf::Vector2f position;
+	sf::Vector2f velocity;
 };
 
 class Server
@@ -32,7 +33,7 @@ class Server
 		void update(float deltaTime);
 
 		void registerClient(sf::IpAddress address, unsigned short port);
-		void registerAction(sf::IpAddress address, unsigned short port, sf::Vector2f moved);
+		void registerAction(sf::IpAddress address, unsigned short port, sf::Vector2f acceleration);
 
 		std::unordered_map<std::string, struct ClientInfo> m_clients;
 		std::unordered_map<int, struct Object> m_objects;

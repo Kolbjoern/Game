@@ -79,7 +79,7 @@ void Client::handleInput()
 
 void Client::update(float deltaTime)
 {
-	static const float MOVE_ACCELERATION = 500.0f;
+	static const float MOVE_ACCELERATION = 50.0f;
 	sf::Vector2f newAcceleration(0.0f, 0.0f);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))

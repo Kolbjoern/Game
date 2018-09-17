@@ -56,9 +56,9 @@ void Server::receive()
 
 			// MOVE
 			case 1:
-				sf::Vector2f moved;
-				m_packet >> moved.x >> moved.y;
-				registerAction(sender, port, moved);
+				sf::Vector2f acceleration;
+				m_packet >> acceleration.x >> acceleration.y;
+				registerAction(sender, port, acceleration);
 				break;
 		}
 
@@ -79,8 +79,8 @@ void Server::registerClient(sf::IpAddress address, unsigned short port)
 		m_clients.emplace(newClient, client);
 
 		Object object;
-		object.position.x = 0.0f;
-		object.position.y = 0.0f;
+		object.position = sf::Vector2f(0.0f, 0.0f);
+		object.velocity = sf::Vector2f(0.0f, 0.0f);
 		m_objects.emplace(client.objectId, object);
 
 		std::cout << "New client added: " << newClient << std::endl;
@@ -93,13 +93,13 @@ void Server::registerClient(sf::IpAddress address, unsigned short port)
 	}
 }
 
-void Server::registerAction(sf::IpAddress address, unsigned short port, sf::Vector2f moved)
+void Server::registerAction(sf::IpAddress address, unsigned short port, sf::Vector2f acceleration)
 {
 	std::string clientId = address.toString() + ":" + std::to_string(port);
 	std::unordered_map<std::string, struct ClientInfo>::const_iterator client = m_clients.find(clientId);
 	if (client != m_clients.end())
 	{
-		std::pair<int, sf::Vector2f> clientAction (client->second.objectId, moved);
+		std::pair<int, sf::Vector2f> clientAction (client->second.objectId, acceleration);
 		m_actions.push_back(clientAction);
 	}
 }
@@ -111,19 +111,24 @@ void Server::update(float deltaTime)
 	{
 		//std::cout << m_actions[i].first << " did: " << m_actions[i].second << std::endl;
 		int objectId = m_actions[i].first;
-		sf::Vector2f moved = m_actions[i].second;
+		sf::Vector2f acceleration = m_actions[i].second;
 		m_actions[i] = m_actions.back();
 		m_actions.pop_back();
 
-		sf::Vector2f newPos = m_objects[objectId].position;
-		newPos.x += moved.x;
-		newPos.y += moved.y;
+		Object &currentObject = m_objects[objectId];
+		currentObject.velocity = currentObject.velocity + acceleration;
+	}
 
-		// VALIDATE
+	for (int j = 0; j < m_objects.size(); j++)
+	{
+		// update object pos
+		Object &currentObject = m_objects[j];
+		sf::Vector2f newPos = currentObject.position + currentObject.velocity;
+		// VALIDATE AND HANDLE COLLISION
+		currentObject.position = newPos;
 
-		m_objects[objectId].position = newPos;
-
-		std::cout << objectId << " newPos - x:: " << newPos.x << " y:: " << newPos.y << std::endl; 
+		// slow down
+		currentObject.velocity = currentObject.velocity * 0.95f;
 	}
 
 	sf::Uint8 header = 3;//"DRAWABLE"
