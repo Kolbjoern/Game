@@ -79,7 +79,7 @@ void Client::handleInput()
 
 void Client::update(float deltaTime)
 {
-	static const float MOVE_ACCELERATION = 50.0f;
+	static const float MOVE_ACCELERATION = 25.0f;
 	sf::Vector2f newAcceleration(0.0f, 0.0f);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -132,7 +132,7 @@ void Client::render()
 	m_window.clear();
 
 	sf::CircleShape body;
-	body.setRadius(50.0f);
+	body.setRadius(25.0f);
 	body.setFillColor(sf::Color(100, 250, 50));
 	for (auto obj : m_drawableObjects)
 	{

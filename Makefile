@@ -1,6 +1,6 @@
 CPP=g++
 CPPFLAGS=-Iinclude -Llibs
-CPP_FILES=src/main.cpp src/Server.cpp src/Client.cpp src/utils/LoopTimer.cpp
+CPP_FILES=src/main.cpp src/Server.cpp src/Client.cpp src/utils/LoopTimer.cpp src/ecs/Systems/PhysicsSystem.cpp
 LIB_FILES=-lsfml-system -lsfml-window -lsfml-graphics -lsfml-network
 
 Game: src/main.cpp

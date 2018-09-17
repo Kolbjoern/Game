@@ -78,10 +78,15 @@ void Server::registerClient(sf::IpAddress address, unsigned short port)
 		client.address = address;
 		m_clients.emplace(newClient, client);
 
-		Object object;
-		object.position = sf::Vector2f(0.0f, 0.0f);
-		object.velocity = sf::Vector2f(0.0f, 0.0f);
-		m_objects.emplace(client.objectId, object);
+		PositionComp pos;
+		pos.x = 0.0f;
+		pos.y = 0.0f;
+		m_positionComps.emplace(client.objectId, pos);
+
+		VelocityComp vel;
+		vel.x = 0.0f;
+		vel.y = 0.0f;
+		m_velocityComps.emplace(client.objectId, vel);
 
 		std::cout << "New client added: " << newClient << std::endl;
 		
@@ -115,29 +120,19 @@ void Server::update(float deltaTime)
 		m_actions[i] = m_actions.back();
 		m_actions.pop_back();
 
-		Object &currentObject = m_objects[objectId];
-		currentObject.velocity = currentObject.velocity + acceleration;
+		m_velocityComps[objectId].x = m_velocityComps[objectId].x + acceleration.x;
+		m_velocityComps[objectId].y = m_velocityComps[objectId].y + acceleration.y;
 	}
 
-	for (int j = 0; j < m_objects.size(); j++)
-	{
-		// update object pos
-		Object &currentObject = m_objects[j];
-		sf::Vector2f newPos = currentObject.position + currentObject.velocity;
-		// VALIDATE AND HANDLE COLLISION
-		currentObject.position = newPos;
-
-		// slow down
-		currentObject.velocity = currentObject.velocity * 0.95f;
-	}
+	m_physicsSystem.update(m_positionComps, m_velocityComps);
 
 	sf::Uint8 header = 3;//"DRAWABLE"
-	for (auto object : m_objects)
+	for (int j = 0; j < m_positionComps.size(); j++)
 	{
 		for (auto client : m_clients)
 		{
 			// send whole list of objects in one package?
-			m_packet << header << object.first << object.second.position.x << object.second.position.y;
+			m_packet << header << j << m_positionComps[j].x << m_positionComps[j].y;
 			m_socket.send(m_packet, client.second.address, client.second.port);
 			m_packet.clear();
 		}
