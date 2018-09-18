@@ -66,7 +66,7 @@ void Server::receive()
 	}
 }
 
-void Server::registerClient(sf::IpAddress address, unsigned short port)
+void Server::registerClient(sf::IpAddress &address, unsigned short &port)
 {
 	// check whether client already exists
 	std::string newClient = address.toString() + ":" + std::to_string(port);
@@ -103,7 +103,7 @@ void Server::registerClient(sf::IpAddress address, unsigned short port)
 	}
 }
 
-void Server::registerAction(sf::IpAddress address, unsigned short port, sf::Vector2f acceleration)
+void Server::registerAction(sf::IpAddress &address, unsigned short &port, sf::Vector2f &acceleration)
 {
 	std::string clientId = address.toString() + ":" + std::to_string(port);
 	std::unordered_map<std::string, struct ClientInfo>::const_iterator client = m_clients.find(clientId);
@@ -129,17 +129,19 @@ void Server::update(float deltaTime)
 		m_velocityComps[objectId].y = m_velocityComps[objectId].y + acceleration.y;
 	}
 
-	m_physicsSystem.update(m_positionComps, m_velocityComps);
+	PhysicsSystem::update(m_positionComps, m_velocityComps);
 
+	int objId;
 	sf::Uint8 header = 3;//"DRAWABLE"
-	for (int j = 0; j < m_graphicsComps.size(); j++)
+	for (std::pair<int, GraphicsComp> graphic : m_graphicsComps)
 	{
-		for (auto client : m_clients)
+		objId = graphic.first;
+		for (std::pair<std::string, ClientInfo> client : m_clients)
 		{
-			if (m_positionComps.find(j) != m_positionComps.end())
+			if (m_positionComps.find(objId) != m_positionComps.end())
 			{
 				// send whole list of objects in one package?
-				m_packet << header << j << m_positionComps[j].x << m_positionComps[j].y << m_graphicsComps[j].width << m_graphicsComps[j].color.r << m_graphicsComps[j].color.g << m_graphicsComps[j].color.b;
+				m_packet << header << objId << m_positionComps[objId].x << m_positionComps[objId].y << graphic.second.width << graphic.second.color.r << graphic.second.color.g << graphic.second.color.b;
 				m_socket.send(m_packet, client.second.address, client.second.port);
 				m_packet.clear();
 			}

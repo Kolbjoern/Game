@@ -1,22 +1,27 @@
 #include "PhysicsSystem.h"
 
-void PhysicsSystem::update(	std::unordered_map<int, PositionComp> &pos, 
-							std::unordered_map<int, VelocityComp> &vel)
+namespace PhysicsSystem
 {
-	for (int i = 0; i < pos.size(); i++)
+	void update(std::unordered_map<int, PositionComp> &pos, 
+				std::unordered_map<int, VelocityComp> &vel)
 	{
-		if (pos.find(i) != pos.end() && vel.find(i) != vel.end())
+		int objId;
+		for (std::pair<int, PositionComp> position : pos)
 		{
-			float newX = pos[i].x + vel[i].x;
-			float newY = pos[i].y + vel[i].y;
+			objId = position.first;
+			if (vel.find(objId) != vel.end())
+			{
+				float newX = position.second.x + vel[objId].x;
+				float newY = position.second.y + vel[objId].y;
 			
-			// VALIDATE AND HANDLE COLLISION
-			pos[i].x = newX;
-			pos[i].y = newY;
+				// VALIDATE AND HANDLE COLLISION
+				pos[objId].x = newX;
+				pos[objId].y = newY;
 
-			// slow down
-			vel[i].x *= 0.94f;
-			vel[i].y *= 0.94f;
+				// slow down
+				vel[objId].x *= 0.94f;
+				vel[objId].y *= 0.94f;
+			}
 		}
 	}
 }

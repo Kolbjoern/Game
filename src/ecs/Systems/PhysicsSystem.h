@@ -4,9 +4,8 @@
 
 #include "../Components.h"
 
-class PhysicsSystem
+namespace PhysicsSystem
 {
-	public:
-		void update(std::unordered_map<int, PositionComp> &pos, 
-					std::unordered_map<int, VelocityComp> &vel);
+	void update(std::unordered_map<int, PositionComp> &pos, 
+				std::unordered_map<int, VelocityComp> &vel);
 };

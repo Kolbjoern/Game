@@ -27,8 +27,8 @@ class Server
 		void receive();
 		void update(float deltaTime);
 
-		void registerClient(sf::IpAddress address, unsigned short port);
-		void registerAction(sf::IpAddress address, unsigned short port, sf::Vector2f acceleration);
+		void registerClient(sf::IpAddress &address, unsigned short &port);
+		void registerAction(sf::IpAddress &address, unsigned short &port, sf::Vector2f &acceleration);
 
 		std::unordered_map<std::string, struct ClientInfo> m_clients;
 		std::vector<std::pair<int, sf::Vector2f>> m_actions;
@@ -42,5 +42,4 @@ class Server
 		sf::Packet m_packet;
 
 		LoopTimer m_loopTimer;
-		PhysicsSystem m_physicsSystem;
 };
