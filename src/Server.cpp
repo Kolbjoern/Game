@@ -56,9 +56,9 @@ void Server::receive()
 
 			// MOVE
 			case 1:
-				sf::Vector2f acceleration;
-				m_packet >> acceleration.x >> acceleration.y;
-				registerAction(sender, port, acceleration);
+				sf::Vector2f direction;
+				m_packet >> direction.x >> direction.y;
+				registerAction(sender, port, direction);
 				break;
 		}
 
@@ -83,6 +83,10 @@ void Server::registerClient(sf::IpAddress &address, unsigned short &port)
 		pos.y = 0.0f;
 		m_positionComps.emplace(client.objectId, pos);
 
+		AccelerationComp acc;
+		acc.value = 25.0f;
+		m_accelerationComps.emplace(client.objectId, acc);
+
 		VelocityComp vel;
 		vel.x = 0.0f;
 		vel.y = 0.0f;
@@ -103,13 +107,13 @@ void Server::registerClient(sf::IpAddress &address, unsigned short &port)
 	}
 }
 
-void Server::registerAction(sf::IpAddress &address, unsigned short &port, sf::Vector2f &acceleration)
+void Server::registerAction(sf::IpAddress &address, unsigned short &port, sf::Vector2f &direction)
 {
 	std::string clientId = address.toString() + ":" + std::to_string(port);
 	std::unordered_map<std::string, struct ClientInfo>::const_iterator client = m_clients.find(clientId);
 	if (client != m_clients.end())
 	{
-		std::pair<int, sf::Vector2f> clientAction (client->second.objectId, acceleration);
+		std::pair<int, sf::Vector2f> clientAction (client->second.objectId, direction);
 		m_actions.push_back(clientAction);
 	}
 }
@@ -119,17 +123,21 @@ void Server::update(float deltaTime)
 	// need better iterator?
 	for (int i = 0; i < m_actions.size(); i++)
 	{
-		//std::cout << m_actions[i].first << " did: " << m_actions[i].second << std::endl;
 		int objectId = m_actions[i].first;
-		sf::Vector2f acceleration = m_actions[i].second;
+		sf::Vector2f direction = m_actions[i].second;
+
+		// remove action
 		m_actions[i] = m_actions.back();
 		m_actions.pop_back();
 
-		m_velocityComps[objectId].x = m_velocityComps[objectId].x + acceleration.x;
-		m_velocityComps[objectId].y = m_velocityComps[objectId].y + acceleration.y;
+		if (m_accelerationComps.find(objectId) != m_accelerationComps.end())
+		{
+			m_accelerationComps[objectId].dirX = direction.x;
+			m_accelerationComps[objectId].dirY = direction.y;
+		}
 	}
 
-	PhysicsSystem::update(m_positionComps, m_velocityComps);
+	PhysicsSystem::update(deltaTime, m_positionComps, m_accelerationComps, m_velocityComps);
 
 	int objId;
 	sf::Uint8 header = 3;//"DRAWABLE"

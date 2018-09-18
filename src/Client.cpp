@@ -79,25 +79,24 @@ void Client::handleInput()
 
 void Client::update(float deltaTime)
 {
-	static const float MOVE_ACCELERATION = 25.0f;
-	sf::Vector2f newAcceleration(0.0f, 0.0f);
+	sf::Vector2f direction(0.0f, 0.0f);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		newAcceleration.x -= MOVE_ACCELERATION * deltaTime;
+		direction.x = -1.0f;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		newAcceleration.x += MOVE_ACCELERATION * deltaTime;
+		direction.x = 1.0f;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		newAcceleration.y -= MOVE_ACCELERATION * deltaTime;
+		direction.y = -1.0f;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		newAcceleration.y += MOVE_ACCELERATION * deltaTime;
+		direction.y = 1.0f;
 
-	if (newAcceleration.x != 0 || newAcceleration.y != 0)
+	if (direction.x != 0 || direction.y != 0)
 	{
 		sf::Uint8 header = 1;//"MOVE";
-		m_packet << header << newAcceleration.x << newAcceleration.y;
+		m_packet << header << direction.x << direction.y;
 		m_socket.send(m_packet, m_serverIp, 9966);
 		m_packet.clear();
 	}

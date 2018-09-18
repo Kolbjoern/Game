@@ -28,11 +28,12 @@ class Server
 		void update(float deltaTime);
 
 		void registerClient(sf::IpAddress &address, unsigned short &port);
-		void registerAction(sf::IpAddress &address, unsigned short &port, sf::Vector2f &acceleration);
+		void registerAction(sf::IpAddress &address, unsigned short &port, sf::Vector2f &direction);
 
 		std::unordered_map<std::string, struct ClientInfo> m_clients;
 		std::vector<std::pair<int, sf::Vector2f>> m_actions;
 		std::unordered_map<int, PositionComp> m_positionComps;
+		std::unordered_map<int, AccelerationComp> m_accelerationComps;
 		std::unordered_map<int, VelocityComp> m_velocityComps;
 		std::unordered_map<int, GraphicsComp> m_graphicsComps;
 

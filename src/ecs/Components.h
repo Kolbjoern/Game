@@ -8,6 +8,13 @@ struct PositionComp
 	float y;
 };
 
+struct AccelerationComp
+{
+	float value;
+	float dirX;
+	float dirY;
+};
+
 struct VelocityComp
 {
 	float x;

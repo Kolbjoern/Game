@@ -2,17 +2,31 @@
 
 namespace PhysicsSystem
 {
-	void update(std::unordered_map<int, PositionComp> &pos, 
+	void update(float deltaTime,
+				std::unordered_map<int, PositionComp> &pos,
+				std::unordered_map<int, AccelerationComp> &acc,
 				std::unordered_map<int, VelocityComp> &vel)
 	{
 		int objId;
-		for (std::pair<int, PositionComp> position : pos)
+		for (std::pair<int, VelocityComp> velocity : vel)
 		{
-			objId = position.first;
-			if (vel.find(objId) != vel.end())
+			objId = velocity.first;
+
+			if (acc.find(objId) != acc.end())
 			{
-				float newX = position.second.x + vel[objId].x;
-				float newY = position.second.y + vel[objId].y;
+				// acceleration affects the objects velocity
+				vel[objId].x = velocity.second.x + acc[objId].dirX * acc[objId].value * deltaTime;
+				vel[objId].y = velocity.second.y + acc[objId].dirY * acc[objId].value * deltaTime;
+
+				// remove acceleration
+				acc[objId].dirX = 0.0f;
+				acc[objId].dirY = 0.0f;
+			}
+
+			if (pos.find(objId) != pos.end())
+			{
+				float newX = pos[objId].x + velocity.second.x;
+				float newY = pos[objId].y + velocity.second.y;
 			
 				// VALIDATE AND HANDLE COLLISION
 				pos[objId].x = newX;
