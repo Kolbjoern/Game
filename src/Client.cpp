@@ -109,8 +109,6 @@ void Client::receive()
 	unsigned short port;
 	sf::Uint8 header;
 	int objectId;
-	float xPos;
-	float yPos;
 
 	while (m_socket.receive(m_packet, sender, port) == sf::Socket::Done)
 	{
@@ -120,8 +118,9 @@ void Client::receive()
 		{
 			// DRAWABLE
 			case 3:
-				m_packet >> objectId >> xPos >> yPos;
-				m_drawableObjects[objectId] = sf::Vector2f(xPos, yPos);
+				DrawableObject obj;
+				m_packet >> objectId >> obj.x >> obj.y >> obj.width >> obj.color.r >> obj.color.g >> obj.color.b;
+				m_drawableObjects[objectId] = obj;
 				break;
 		}
 	}
@@ -132,11 +131,11 @@ void Client::render()
 	m_window.clear();
 
 	sf::CircleShape body;
-	body.setRadius(25.0f);
-	body.setFillColor(sf::Color(100, 250, 50));
 	for (auto obj : m_drawableObjects)
 	{
-		body.setPosition(obj.second);
+		body.setPosition(obj.second.x, obj.second.y);
+		body.setFillColor(obj.second.color);
+		body.setRadius(obj.second.width/2.0f);
 		m_window.draw(body);
 	}
 

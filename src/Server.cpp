@@ -88,6 +88,11 @@ void Server::registerClient(sf::IpAddress address, unsigned short port)
 		vel.y = 0.0f;
 		m_velocityComps.emplace(client.objectId, vel);
 
+		GraphicsComp gra;
+		gra.width = 50.0f;
+		gra.color = sf::Color(255, 50, 60);
+		m_graphicsComps.emplace(client.objectId, gra);
+
 		std::cout << "New client added: " << newClient << std::endl;
 		
 		// send registration info back
@@ -127,14 +132,17 @@ void Server::update(float deltaTime)
 	m_physicsSystem.update(m_positionComps, m_velocityComps);
 
 	sf::Uint8 header = 3;//"DRAWABLE"
-	for (int j = 0; j < m_positionComps.size(); j++)
+	for (int j = 0; j < m_graphicsComps.size(); j++)
 	{
 		for (auto client : m_clients)
 		{
-			// send whole list of objects in one package?
-			m_packet << header << j << m_positionComps[j].x << m_positionComps[j].y;
-			m_socket.send(m_packet, client.second.address, client.second.port);
-			m_packet.clear();
+			if (m_positionComps.find(j) != m_positionComps.end())
+			{
+				// send whole list of objects in one package?
+				m_packet << header << j << m_positionComps[j].x << m_positionComps[j].y << m_graphicsComps[j].width << m_graphicsComps[j].color.r << m_graphicsComps[j].color.g << m_graphicsComps[j].color.b;
+				m_socket.send(m_packet, client.second.address, client.second.port);
+				m_packet.clear();
+			}
 		}
 	}
 }

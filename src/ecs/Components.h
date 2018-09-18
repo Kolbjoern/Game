@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Color.hpp>
 
 struct PositionComp
 {
@@ -12,4 +12,10 @@ struct VelocityComp
 {
 	float x;
 	float y;
+};
+
+struct GraphicsComp
+{
+	float width;
+	sf::Color color;
 };

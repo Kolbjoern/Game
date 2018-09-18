@@ -34,6 +34,7 @@ class Server
 		std::vector<std::pair<int, sf::Vector2f>> m_actions;
 		std::unordered_map<int, PositionComp> m_positionComps;
 		std::unordered_map<int, VelocityComp> m_velocityComps;
+		std::unordered_map<int, GraphicsComp> m_graphicsComps;
 
 		int m_currentObjectId;
 

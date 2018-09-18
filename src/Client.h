@@ -8,6 +8,14 @@
 
 #include "utils/LoopTimer.h"
 
+struct DrawableObject
+{
+	float x;
+	float y;
+	float width;
+	sf::Color color;
+};
+
 class Client
 {
 	public:
@@ -20,7 +28,7 @@ class Client
 		void receive();
 		void render();
 
-		std::unordered_map<int, sf::Vector2f> m_drawableObjects;
+		std::unordered_map<int, DrawableObject> m_drawableObjects;
 
 		sf::RenderWindow m_window;
 		sf::UdpSocket m_socket;
