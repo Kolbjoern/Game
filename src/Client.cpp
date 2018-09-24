@@ -132,7 +132,7 @@ void Client::render()
 	sf::CircleShape body;
 	for (std::pair<int, DrawableObject> obj : m_drawableObjects)
 	{
-		body.setPosition(obj.second.x, obj.second.y);
+		body.setPosition(obj.second.x - obj.second.width/2.0f, obj.second.y - obj.second.width/2.0f);
 		body.setFillColor(obj.second.color);
 		body.setRadius(obj.second.width/2.0f);
 		m_window.draw(body);

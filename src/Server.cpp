@@ -29,6 +29,23 @@ void Server::init()
 	
 	m_loopTimer.init();
 
+	// OSTACLE FOR COLLISION TESTING
+	int objId = m_currentObjectId++;
+	
+	PositionComp pos;
+	pos.x = 600.0f;
+	pos.y = 350.0f;
+	m_positionComps.emplace(objId, pos);
+
+	GraphicsComp gra;
+	gra.width = 200.0f;
+	gra.color = sf::Color(255.0f, 255.0f, 255.0f);
+	m_graphicsComps.emplace(objId, gra);
+
+	CollisionComp col;
+	col.width = 200.0f;
+	m_collisionComps.emplace(objId, col);
+
 	std::cout << "SERVER::INITIALIZED" << std::endl;
 	std::cout << "HOST ADDRESS:" << std::endl;
 	std::cout << "public: " << sf::IpAddress::getPublicAddress() << std::endl;
@@ -72,8 +89,9 @@ void Server::registerClient(sf::IpAddress &address, unsigned short &port)
 	std::string newClient = address.toString() + ":" + std::to_string(port);
 	if (m_clients.find(newClient) == m_clients.end())
 	{
+		int objId = m_currentObjectId++;
 		ClientInfo client;
-		client.objectId = m_currentObjectId++;
+		client.objectId = objId;
 		client.port = port;
 		client.address = address;
 		m_clients.emplace(newClient, client);
@@ -81,21 +99,25 @@ void Server::registerClient(sf::IpAddress &address, unsigned short &port)
 		PositionComp pos;
 		pos.x = 0.0f;
 		pos.y = 0.0f;
-		m_positionComps.emplace(client.objectId, pos);
+		m_positionComps.emplace(objId, pos);
 
 		AccelerationComp acc;
 		acc.value = 25.0f;
-		m_accelerationComps.emplace(client.objectId, acc);
+		m_accelerationComps.emplace(objId, acc);
 
 		VelocityComp vel;
 		vel.x = 0.0f;
 		vel.y = 0.0f;
-		m_velocityComps.emplace(client.objectId, vel);
+		m_velocityComps.emplace(objId, vel);
 
 		GraphicsComp gra;
 		gra.width = 50.0f;
 		gra.color = sf::Color(255, 50, 60);
-		m_graphicsComps.emplace(client.objectId, gra);
+		m_graphicsComps.emplace(objId, gra);
+
+		CollisionComp col;
+		col.width = 50.0f;
+		m_collisionComps.emplace(objId, col);
 
 		std::cout << "New client added: " << newClient << std::endl;
 		
@@ -137,7 +159,7 @@ void Server::update(float deltaTime)
 		}
 	}
 
-	PhysicsSystem::update(deltaTime, m_positionComps, m_accelerationComps, m_velocityComps);
+	PhysicsSystem::update(deltaTime, m_positionComps, m_accelerationComps, m_velocityComps, m_collisionComps);
 
 	int objId;
 	sf::Uint8 header = 3;//"DRAWABLE"

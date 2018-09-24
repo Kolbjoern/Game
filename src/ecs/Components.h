@@ -26,3 +26,8 @@ struct GraphicsComp
 	float width;
 	sf::Color color;
 };
+
+struct CollisionComp
+{
+	float width;
+};

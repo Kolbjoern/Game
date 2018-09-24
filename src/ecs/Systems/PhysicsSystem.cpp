@@ -1,11 +1,16 @@
 #include "PhysicsSystem.h"
 
+#include <math.h>
+
+#include <SFML/System/Vector2.hpp>
+
 namespace PhysicsSystem
 {
 	void update(float deltaTime,
 				std::unordered_map<int, PositionComp> &pos,
 				std::unordered_map<int, AccelerationComp> &acc,
-				std::unordered_map<int, VelocityComp> &vel)
+				std::unordered_map<int, VelocityComp> &vel,
+				std::unordered_map<int, CollisionComp> &col)
 	{
 		int objId;
 		for (std::pair<int, VelocityComp> velocity : vel)
@@ -31,6 +36,37 @@ namespace PhysicsSystem
 				// VALIDATE AND HANDLE COLLISION
 				pos[objId].x = newX;
 				pos[objId].y = newY;
+
+				if (col.find(objId) != col.end())
+				{
+					for (std::pair<int, CollisionComp> collision : col)
+					{
+						int i = collision.first;
+
+						if (i == objId)
+							continue;
+
+						const float MIN_DISTANCE = col[objId].width/2.0f + col[i].width/2.0f;
+						sf::Vector2f centerA = sf::Vector2f(newX, newY);
+						sf::Vector2f centerB = sf::Vector2f(pos[i].x, pos[i].y);
+
+						sf::Vector2f distVec = centerA - centerB;
+
+						float dist = sqrtf(distVec.x * distVec.x + distVec.y * distVec.y);
+						float collisionDepth = MIN_DISTANCE - dist;
+						if (collisionDepth > 0)
+						{
+							//noramlise depth vector
+							sf::Vector2f depthVec = sf::Vector2f(distVec.x / dist, distVec.y / dist) * collisionDepth;
+							
+							pos[objId].x += depthVec.x;
+							pos[objId].y += depthVec.y;
+
+							vel[objId].x *= -0.25f;
+							vel[objId].y *= -0.25f;
+						}
+					}
+				}
 
 				// slow down
 				vel[objId].x *= 0.94f;

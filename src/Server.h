@@ -36,6 +36,7 @@ class Server
 		std::unordered_map<int, AccelerationComp> m_accelerationComps;
 		std::unordered_map<int, VelocityComp> m_velocityComps;
 		std::unordered_map<int, GraphicsComp> m_graphicsComps;
+		std::unordered_map<int, CollisionComp> m_collisionComps;
 
 		int m_currentObjectId;
 
