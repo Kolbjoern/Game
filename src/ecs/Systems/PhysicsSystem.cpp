@@ -1,8 +1,8 @@
 #include "PhysicsSystem.h"
 
-#include <math.h>
-
 #include <SFML/System/Vector2.hpp>
+
+#include "../../utils/VectorMath.h"
 
 namespace PhysicsSystem
 {
@@ -52,12 +52,12 @@ namespace PhysicsSystem
 
 						sf::Vector2f distVec = centerA - centerB;
 
-						float dist = sqrtf(distVec.x * distVec.x + distVec.y * distVec.y);
+						float dist = VectorMath::getMagnitude(distVec);
 						float collisionDepth = MIN_DISTANCE - dist;
 						if (collisionDepth > 0)
 						{
-							//noramlise depth vector
-							sf::Vector2f depthVec = sf::Vector2f(distVec.x / dist, distVec.y / dist) * collisionDepth;
+							//noramlize depth vector
+							sf::Vector2f depthVec = VectorMath::normalize(distVec) * collisionDepth;
 							
 							pos[objId].x += depthVec.x;
 							pos[objId].y += depthVec.y;
