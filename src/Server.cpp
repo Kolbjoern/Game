@@ -33,7 +33,6 @@ void Server::init()
 
 	// OSTACLE FOR COLLISION TESTING
 	int objId = m_currentObjectId++;
-	m_entities.emplace(objId, false);
 
 	PositionComponent pos;
 	pos.x = 600.0f;
@@ -93,7 +92,6 @@ void Server::registerClient(sf::IpAddress &address, unsigned short &port)
 	if (m_clients.find(newClient) == m_clients.end())
 	{
 		int objId = m_currentObjectId++;
-		m_entities.emplace(objId, false);
 
 		ClientInfo client;
 		client.objectId = objId;
@@ -164,7 +162,7 @@ void Server::update(float deltaTime)
 		}
 	}
 
-	PhysicsSystem::update(deltaTime, m_entities, m_positionComps, m_accelerationComps, m_velocityComps, m_collisionComps);
+	PhysicsSystem::update(deltaTime, m_deathRow, m_positionComps, m_accelerationComps, m_velocityComps, m_collisionComps);
 
 	int objId;
 	sf::Uint8 header = 3;//"DRAWABLE"
@@ -186,27 +184,23 @@ void Server::update(float deltaTime)
 
 void Server::purgeTheDead()
 {
-	for (std::pair<int, bool> entity : m_entities)
+	for (int i = 0; i < m_deathRow.size(); i++)
 	{
-		if (entity.second == true)
+		int id = m_deathRow[i];
+		m_positionComps.erase(id);
+		m_accelerationComps.erase(id);
+		m_velocityComps.erase(id);
+		m_graphicsComps.erase(id);
+		m_collisionComps.erase(id);
+
+		sf::Uint8 header = 4;//DEATH
+		m_packet << header << id;
+
+		for (std::pair<std::string, ClientInfo> client : m_clients)
 		{
-			int id = entity.first;
-			std::cout << "delete this mofo: " << id << std::endl;
-			m_positionComps.erase(id);
-			m_accelerationComps.erase(id);
-			m_velocityComps.erase(id);
-			m_graphicsComps.erase(id);
-			m_collisionComps.erase(id);
-			m_entities.erase(id);
-
-			sf::Uint8 header = 4;//DEATH
-			m_packet << header << id;
-
-			for (std::pair<std::string, ClientInfo> client : m_clients)
-			{
-				m_socket.send(m_packet, client.second.address, client.second.port);
-				m_packet.clear();
-			}
+			m_socket.send(m_packet, client.second.address, client.second.port);
+			m_packet.clear();
 		}
 	}
+	m_deathRow.clear();
 }

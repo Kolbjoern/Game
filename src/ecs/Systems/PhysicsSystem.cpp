@@ -7,7 +7,7 @@
 namespace PhysicsSystem
 {
 	void update(float deltaTime,
-				std::unordered_map<int, bool> &ent,
+				std::vector<int> &deathRow,
 				std::unordered_map<int, PositionComponent> &pos,
 				std::unordered_map<int, AccelerationComponent> &acc,
 				std::unordered_map<int, VelocityComponent> &vel,
@@ -57,7 +57,7 @@ namespace PhysicsSystem
 						float collisionDepth = MIN_DISTANCE - dist;
 						if (collisionDepth > 0)
 						{
-							ent[objId] = true;
+							deathRow.push_back(objId);
 							//noramlize depth vector
 							sf::Vector2f depthVec = VectorMath::normalize(distVec) * collisionDepth;
 							

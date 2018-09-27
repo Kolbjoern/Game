@@ -40,7 +40,7 @@ class Server
 		std::unordered_map<int, GraphicsComponent> m_graphicsComps;
 		std::unordered_map<int, CollisionComponent> m_collisionComps;
 
-		std::unordered_map<int, bool> m_entities;
+		std::vector<int> m_deathRow;
 
 		int m_currentObjectId;
 
