@@ -7,13 +7,14 @@
 namespace PhysicsSystem
 {
 	void update(float deltaTime,
-				std::unordered_map<int, PositionComp> &pos,
-				std::unordered_map<int, AccelerationComp> &acc,
-				std::unordered_map<int, VelocityComp> &vel,
-				std::unordered_map<int, CollisionComp> &col)
+				std::unordered_map<int, bool> &ent,
+				std::unordered_map<int, PositionComponent> &pos,
+				std::unordered_map<int, AccelerationComponent> &acc,
+				std::unordered_map<int, VelocityComponent> &vel,
+				std::unordered_map<int, CollisionComponent> &col)
 	{
 		int objId;
-		for (std::pair<int, VelocityComp> velocity : vel)
+		for (std::pair<int, VelocityComponent> velocity : vel)
 		{
 			objId = velocity.first;
 
@@ -39,7 +40,7 @@ namespace PhysicsSystem
 
 				if (col.find(objId) != col.end())
 				{
-					for (std::pair<int, CollisionComp> collision : col)
+					for (std::pair<int, CollisionComponent> collision : col)
 					{
 						int i = collision.first;
 
@@ -56,6 +57,7 @@ namespace PhysicsSystem
 						float collisionDepth = MIN_DISTANCE - dist;
 						if (collisionDepth > 0)
 						{
+							ent[objId] = true;
 							//noramlize depth vector
 							sf::Vector2f depthVec = VectorMath::normalize(distVec) * collisionDepth;
 							

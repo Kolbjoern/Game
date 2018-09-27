@@ -15,6 +15,8 @@ void Server::run()
 		receive();
 
 		update(m_loopTimer.getDeltaTime());
+		purgeTheDead();
+
 		sf::sleep(sf::milliseconds(50));
 	}
 }
@@ -31,18 +33,19 @@ void Server::init()
 
 	// OSTACLE FOR COLLISION TESTING
 	int objId = m_currentObjectId++;
-	
-	PositionComp pos;
+	m_entities.emplace(objId, false);
+
+	PositionComponent pos;
 	pos.x = 600.0f;
 	pos.y = 350.0f;
 	m_positionComps.emplace(objId, pos);
 
-	GraphicsComp gra;
+	GraphicsComponent gra;
 	gra.width = 200.0f;
 	gra.color = sf::Color(255.0f, 255.0f, 255.0f);
 	m_graphicsComps.emplace(objId, gra);
 
-	CollisionComp col;
+	CollisionComponent col;
 	col.width = 200.0f;
 	m_collisionComps.emplace(objId, col);
 
@@ -90,32 +93,34 @@ void Server::registerClient(sf::IpAddress &address, unsigned short &port)
 	if (m_clients.find(newClient) == m_clients.end())
 	{
 		int objId = m_currentObjectId++;
+		m_entities.emplace(objId, false);
+
 		ClientInfo client;
 		client.objectId = objId;
 		client.port = port;
 		client.address = address;
 		m_clients.emplace(newClient, client);
 
-		PositionComp pos;
+		PositionComponent pos;
 		pos.x = 0.0f;
 		pos.y = 0.0f;
 		m_positionComps.emplace(objId, pos);
 
-		AccelerationComp acc;
+		AccelerationComponent acc;
 		acc.value = 25.0f;
 		m_accelerationComps.emplace(objId, acc);
 
-		VelocityComp vel;
+		VelocityComponent vel;
 		vel.x = 0.0f;
 		vel.y = 0.0f;
 		m_velocityComps.emplace(objId, vel);
 
-		GraphicsComp gra;
+		GraphicsComponent gra;
 		gra.width = 50.0f;
 		gra.color = sf::Color(255, 50, 60);
 		m_graphicsComps.emplace(objId, gra);
 
-		CollisionComp col;
+		CollisionComponent col;
 		col.width = 50.0f;
 		m_collisionComps.emplace(objId, col);
 
@@ -159,11 +164,11 @@ void Server::update(float deltaTime)
 		}
 	}
 
-	PhysicsSystem::update(deltaTime, m_positionComps, m_accelerationComps, m_velocityComps, m_collisionComps);
+	PhysicsSystem::update(deltaTime, m_entities, m_positionComps, m_accelerationComps, m_velocityComps, m_collisionComps);
 
 	int objId;
 	sf::Uint8 header = 3;//"DRAWABLE"
-	for (std::pair<int, GraphicsComp> graphic : m_graphicsComps)
+	for (std::pair<int, GraphicsComponent> graphic : m_graphicsComps)
 	{
 		objId = graphic.first;
 		for (std::pair<std::string, ClientInfo> client : m_clients)
@@ -172,6 +177,33 @@ void Server::update(float deltaTime)
 			{
 				// send whole list of objects in one package?
 				m_packet << header << objId << m_positionComps[objId].x << m_positionComps[objId].y << graphic.second.width << graphic.second.color.r << graphic.second.color.g << graphic.second.color.b;
+				m_socket.send(m_packet, client.second.address, client.second.port);
+				m_packet.clear();
+			}
+		}
+	}
+}
+
+void Server::purgeTheDead()
+{
+	for (std::pair<int, bool> entity : m_entities)
+	{
+		if (entity.second == true)
+		{
+			int id = entity.first;
+			std::cout << "delete this mofo: " << id << std::endl;
+			m_positionComps.erase(id);
+			m_accelerationComps.erase(id);
+			m_velocityComps.erase(id);
+			m_graphicsComps.erase(id);
+			m_collisionComps.erase(id);
+			m_entities.erase(id);
+
+			sf::Uint8 header = 4;//DEATH
+			m_packet << header << id;
+
+			for (std::pair<std::string, ClientInfo> client : m_clients)
+			{
 				m_socket.send(m_packet, client.second.address, client.second.port);
 				m_packet.clear();
 			}

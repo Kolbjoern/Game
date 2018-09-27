@@ -2,32 +2,32 @@
 
 #include <SFML/Graphics/Color.hpp>
 
-struct PositionComp
+struct PositionComponent
 {
 	float x;
 	float y;
 };
 
-struct AccelerationComp
+struct AccelerationComponent
 {
 	float value;
 	float dirX;
 	float dirY;
 };
 
-struct VelocityComp
+struct VelocityComponent
 {
 	float x;
 	float y;
 };
 
-struct GraphicsComp
+struct GraphicsComponent
 {
 	float width;
 	sf::Color color;
 };
 
-struct CollisionComp
+struct CollisionComponent
 {
 	float width;
 };

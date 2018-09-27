@@ -108,6 +108,7 @@ void Client::receive()
 	unsigned short port;
 	sf::Uint8 header;
 	int objectId;
+	DrawableObject obj;
 
 	while (m_socket.receive(m_packet, sender, port) == sf::Socket::Done)
 	{
@@ -117,9 +118,15 @@ void Client::receive()
 		{
 			// DRAWABLE
 			case 3:
-				DrawableObject obj;
+				//DrawableObject obj;
 				m_packet >> objectId >> obj.x >> obj.y >> obj.width >> obj.color.r >> obj.color.g >> obj.color.b;
 				m_drawableObjects[objectId] = obj;
+				break;
+
+			// DEATH
+			case 4:
+				m_packet >> objectId;
+				m_drawableObjects.erase(objectId);
 				break;
 		}
 	}
