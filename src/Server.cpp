@@ -20,7 +20,7 @@ void Server::run()
 		update(m_loopTimer.getDeltaTime());
 		purgeTheDead();
 
-		sf::sleep(sf::milliseconds(50));
+		sf::sleep(sf::milliseconds(33.3));
 	}
 }
 
