@@ -31,3 +31,9 @@ struct CollisionComponent
 {
 	float width;
 };
+
+struct AgeComponent
+{
+	float lifeTime;
+	float lifeLived;
+};

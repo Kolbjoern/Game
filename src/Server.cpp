@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+#include "ecs/Systems/PhysicsSystem.h"
+#include "ecs/Systems/DeathSystem.h"
+
 #define PORTNUM 9966
 
 void Server::run()
@@ -47,6 +50,11 @@ void Server::init()
 	CollisionComponent col;
 	col.width = 200.0f;
 	m_collisionComps.emplace(objId, col);
+
+	AgeComponent age;
+	age.lifeLived = 0.0f;
+	age.lifeTime = 5.0f;
+	m_ageComponents.emplace(objId, age);
 
 	std::cout << "SERVER::INITIALIZED" << std::endl;
 	std::cout << "HOST ADDRESS:" << std::endl;
@@ -163,6 +171,7 @@ void Server::update(float deltaTime)
 	}
 
 	PhysicsSystem::update(deltaTime, m_deathRow, m_positionComps, m_accelerationComps, m_velocityComps, m_collisionComps);
+	DeathSystem::update(deltaTime, m_deathRow, m_ageComponents);
 
 	int objId;
 	sf::Uint8 header = 3;//"DRAWABLE"
@@ -192,6 +201,7 @@ void Server::purgeTheDead()
 		m_velocityComps.erase(id);
 		m_graphicsComps.erase(id);
 		m_collisionComps.erase(id);
+		m_ageComponents.erase(id);
 
 		sf::Uint8 header = 4;//DEATH
 		m_packet << header << id;

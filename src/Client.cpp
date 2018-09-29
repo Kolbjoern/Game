@@ -34,7 +34,7 @@ void Client::init()
 	std::cout << "server ip: ";
 	std::string input;
 	std::getline(std::cin, input);
-	m_serverIp = input;//"10.0.0.52"
+	m_serverIp = input;
 
 	//register to server
 	sf::Uint8 header = 0;//"REGISTER";

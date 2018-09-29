@@ -8,7 +8,7 @@
 #include <SFML/System/Vector2.hpp>
 
 #include "utils/LoopTimer.h"
-#include "ecs/Systems/PhysicsSystem.h"
+#include "ecs/Components.h"
 
 struct ClientInfo
 {
@@ -39,6 +39,7 @@ class Server
 		std::unordered_map<int, VelocityComponent> m_velocityComps;
 		std::unordered_map<int, GraphicsComponent> m_graphicsComps;
 		std::unordered_map<int, CollisionComponent> m_collisionComps;
+		std::unordered_map<int, AgeComponent> m_ageComponents;
 
 		std::vector<int> m_deathRow;
 
