@@ -5,6 +5,7 @@
 #include "net/NetHeader.h"
 #include "ecs/Systems/PhysicsSystem.h"
 #include "ecs/Systems/DeathSystem.h"
+#include "utils/VectorMath.h"
 
 #define PORTNUM 9966
 
@@ -22,7 +23,7 @@ void Server::run()
 		update(iterationTime);
 		purgeTheDead();
 
-		sf::sleep(sf::milliseconds(16.66f - iterationTime/1000));
+		sf::sleep(sf::milliseconds(16.66f));// - iterationTime/1000));
 	}
 }
 
@@ -83,10 +84,11 @@ void Server::receive()
 				registerClient(sender, port);
 				break;
 
-			case NetHeader::Move:
+			case NetHeader::Action:
+				sf::Uint8 action;
 				sf::Vector2f direction;
-				m_packet >> direction.x >> direction.y;
-				registerAction(sender, port, direction);
+				m_packet >> action >> direction.x >> direction.y;
+				registerAction(sender, port, action, direction);
 				m_packet.clear();
 				break;
 		}
@@ -140,13 +142,16 @@ void Server::registerClient(sf::IpAddress &address, unsigned short &port)
 	}
 }
 
-void Server::registerAction(sf::IpAddress &address, unsigned short &port, sf::Vector2f &direction)
+void Server::registerAction(sf::IpAddress &address, unsigned short &port, sf::Uint8 action, sf::Vector2f &direction)
 {
 	std::string clientId = address.toString() + ":" + std::to_string(port);
 	std::unordered_map<std::string, struct ClientInfo>::const_iterator client = m_clients.find(clientId);
 	if (client != m_clients.end())
 	{
-		std::pair<int, sf::Vector2f> clientAction (client->second.objectId, direction);
+		ClientAction clientAct;
+		clientAct.action = static_cast<int>(action);
+		clientAct.direction = direction;
+		std::pair<int, struct ClientAction> clientAction (client->second.objectId, clientAct);
 		m_actions.push_back(clientAction);
 	}
 }
@@ -157,16 +162,51 @@ void Server::update(float deltaTime)
 	for (int i = 0; i < m_actions.size(); i++)
 	{
 		int objectId = m_actions[i].first;
-		sf::Vector2f direction = m_actions[i].second;
+		ClientAction clientAct = m_actions[i].second;
 
 		// remove action
 		m_actions[i] = m_actions.back();
 		m_actions.pop_back();
 
-		if (m_accelerationComps.find(objectId) != m_accelerationComps.end())
+		switch (clientAct.action)
 		{
-			m_accelerationComps[objectId].dirX = direction.x;
-			m_accelerationComps[objectId].dirY = direction.y;
+			// MOVE
+			case 10:
+				if (m_accelerationComps.find(objectId) != m_accelerationComps.end())
+				{
+					m_accelerationComps[objectId].dirX = clientAct.direction.x;
+					m_accelerationComps[objectId].dirY = clientAct.direction.y;
+				}
+				break;
+
+			// SHOOT
+			case 20:
+				sf::Vector2f gunslingerPos = sf::Vector2f(m_positionComps[objectId].x, m_positionComps[objectId].y);
+				sf::Vector2f fireDir = clientAct.direction - gunslingerPos;
+				sf::Vector2f normalized = VectorMath::normalize(fireDir);
+
+				int newId = m_currentObjectId++;
+
+				PositionComponent pos;
+				pos.x = gunslingerPos.x;
+				pos.y = gunslingerPos.y;
+				m_positionComps.emplace(newId, pos);
+
+				VelocityComponent vel;
+				vel.x = 15.0f * normalized.x;
+				vel.y = 15.0f * normalized.y;
+				m_velocityComps.emplace(newId, vel);
+
+				AgeComponent age;
+				age.lifeLived = 0.0f;
+				age.lifeTime = 2.0f;
+				m_ageComponents.emplace(newId, age);
+
+				GraphicsComponent gra;
+				gra.width = 15.0f;
+				gra.color = sf::Color(10.0f, 255.0f, 50.0f);
+				m_graphicsComps.emplace(newId, gra);
+				break;
 		}
 	}
 

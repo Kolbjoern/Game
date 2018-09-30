@@ -17,6 +17,12 @@ struct ClientInfo
 	unsigned short port;
 };
 
+struct ClientAction
+{
+	int action;
+	sf::Vector2f direction;//magnitude
+};
+
 class Server
 {
 	public:
@@ -28,12 +34,12 @@ class Server
 		void update(float deltaTime);
 
 		void registerClient(sf::IpAddress &address, unsigned short &port);
-		void registerAction(sf::IpAddress &address, unsigned short &port, sf::Vector2f &direction);
+		void registerAction(sf::IpAddress &address, unsigned short &port, sf::Uint8 action, sf::Vector2f &direction);
 
 		void purgeTheDead();
 
 		std::unordered_map<std::string, struct ClientInfo> m_clients;
-		std::vector<std::pair<int, sf::Vector2f>> m_actions;
+		std::vector<std::pair<int, struct ClientAction>> m_actions;
 		std::unordered_map<int, PositionComponent> m_positionComps;
 		std::unordered_map<int, AccelerationComponent> m_accelerationComps;
 		std::unordered_map<int, VelocityComponent> m_velocityComps;

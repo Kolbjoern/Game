@@ -107,21 +107,23 @@ void Client::update(float deltaTime)
 
 	if (direction.x != 0 || direction.y != 0)
 	{
-		sf::Uint8 header = static_cast<int>(NetHeader::Move);
-		m_packet << header << direction.x << direction.y;
+		sf::Uint8 header = static_cast<int>(NetHeader::Action);
+		sf::Uint8 action = 10;
+		m_packet << header << action << direction.x << direction.y;
 		m_socket.send(m_packet, m_serverIp, 9966);
 		m_packet.clear();
 	}
 
-	if (m_drawableObjects.find(m_myObject) != m_drawableObjects.end())
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
-		sf::Vector2f myPosition(m_drawableObjects[m_myObject].x, m_drawableObjects[m_myObject].y);
-
-		if (m_camera.getCenter() != myPosition)
-		{
-			m_camera.setCenter(myPosition);
-			m_window.setView(m_camera);
-		}
+		sf::Vector2i windowPosition = sf::Mouse::getPosition(m_window);
+		sf::Vector2f mouseDirection = sf::Vector2f(windowPosition.x + m_camera.getCenter().x - m_camera.getSize().x / 2, windowPosition.y + m_camera.getCenter().y - m_camera.getSize().y / 2);
+		
+		sf::Uint8 header = static_cast<int>(NetHeader::Action);
+		sf::Uint8 action = 20;
+		m_packet << header << action << mouseDirection.x << mouseDirection.y;
+		m_socket.send(m_packet, m_serverIp, 9966);
+		m_packet.clear();
 	}
 }
 
@@ -148,12 +150,6 @@ void Client::receive()
 				m_packet >> objectId;
 				m_drawableObjects.erase(objectId);
 				break;
-
-			case NetHeader::Assign:
-				m_packet >> objectId;
-				m_myObject = objectId;
-				std::cout << "assigned to object: " << m_myObject << std::endl;
-				break;
 		}
 	}
 }
@@ -171,7 +167,7 @@ void Client::render()
 		m_window.draw(body);
 	}
 
-	/*if (m_drawableObjects.find(m_myObject) != m_drawableObjects.end())
+	if (m_drawableObjects.find(m_myObject) != m_drawableObjects.end())
 	{
 		sf::Vector2f pos(m_drawableObjects[m_myObject].x, m_drawableObjects[m_myObject].y);
 
@@ -180,7 +176,7 @@ void Client::render()
 			m_camera.setCenter(pos);
 			m_window.setView(m_camera);
 		}
-	}*/
+	}
 
 	m_window.display();
 }
