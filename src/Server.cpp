@@ -15,13 +15,14 @@ void Server::run()
 	while (true)
 	{
 		m_loopTimer.tick();
+		float iterationTime = m_loopTimer.getDeltaTime();
 
 		receive();
 
-		update(m_loopTimer.getDeltaTime());
+		update(iterationTime);
 		purgeTheDead();
 
-		sf::sleep(sf::milliseconds(33.3));
+		sf::sleep(sf::milliseconds(16.66f - iterationTime/1000));
 	}
 }
 
@@ -54,8 +55,8 @@ void Server::init()
 
 	AgeComponent age;
 	age.lifeLived = 0.0f;
-	age.lifeTime = 5.0f;
-	m_ageComponents.emplace(objId, age);
+	age.lifeTime = 10.0f;
+	//m_ageComponents.emplace(objId, age);
 
 	std::cout << "SERVER::INITIALIZED" << std::endl;
 	std::cout << "HOST ADDRESS:" << std::endl;
@@ -78,6 +79,7 @@ void Server::receive()
 		{
 			// TODO: init registration before the game starts
 			case NetHeader::Register:
+				m_packet.clear();
 				registerClient(sender, port);
 				break;
 
@@ -85,10 +87,9 @@ void Server::receive()
 				sf::Vector2f direction;
 				m_packet >> direction.x >> direction.y;
 				registerAction(sender, port, direction);
+				m_packet.clear();
 				break;
 		}
-
-		m_packet.clear();
 	}
 }
 
@@ -132,8 +133,8 @@ void Server::registerClient(sf::IpAddress &address, unsigned short &port)
 		std::cout << "New client added: " << newClient << std::endl;
 		
 		// send registration info back
-		std::string clientId = std::to_string(client.objectId);
-		m_packet << clientId;
+		sf::Uint8 header = static_cast<int>(NetHeader::Assign);
+		m_packet << header << objId;
 		m_socket.send(m_packet, client.address, client.port);
 		m_packet.clear();
 	}
@@ -208,8 +209,8 @@ void Server::purgeTheDead()
 		for (std::pair<std::string, ClientInfo> client : m_clients)
 		{
 			m_socket.send(m_packet, client.second.address, client.second.port);
-			m_packet.clear();
 		}
+		m_packet.clear();
 	}
 	m_deathRow.clear();
 }

@@ -34,9 +34,9 @@ void Client::init()
 
 	// enter serverip to connect to
 	std::cout << "server ip: ";
-	std::string input;
-	std::getline(std::cin, input);
-	m_serverIp = input;
+	//std::string input;
+	//std::getline(std::cin, input);
+	m_serverIp = "10.0.0.29";
 
 	//register to server
 	sf::Uint8 header = static_cast<int>(NetHeader::Register);
@@ -52,13 +52,18 @@ void Client::init()
 	if (status != sf::Socket::Done)
 		std::cout << "Could not register to server" << std::endl;
 
-	std::string clientId;
-	m_packet >> clientId;
-	std::cout << clientId << std::endl;
+	m_packet >> header;
+	if (static_cast<NetHeader>(header) == NetHeader::Assign)
+	{
+		m_packet >> m_myObject;
+		std::cout << "Assign to object: " << m_myObject << std::endl;
+	}
 	m_packet.clear();
 
 	m_window.create(sf::VideoMode(1200, 800), "Window 1337");
 	m_window.setFramerateLimit(60.0f);
+
+	m_camera = m_window.getDefaultView();
 
 	m_socket.setBlocking(false);
 
@@ -74,6 +79,11 @@ void Client::handleInput()
 		{
 			case sf::Event::Closed:
 				m_window.close();
+				break;
+
+			case sf::Event::Resized:
+				m_camera.setSize(sf::Vector2f((float)event.size.width, (float)event.size.height));
+				m_window.setView(m_camera);
 				break;
 		}
 	}
@@ -102,6 +112,17 @@ void Client::update(float deltaTime)
 		m_socket.send(m_packet, m_serverIp, 9966);
 		m_packet.clear();
 	}
+
+	if (m_drawableObjects.find(m_myObject) != m_drawableObjects.end())
+	{
+		sf::Vector2f myPosition(m_drawableObjects[m_myObject].x, m_drawableObjects[m_myObject].y);
+
+		if (m_camera.getCenter() != myPosition)
+		{
+			m_camera.setCenter(myPosition);
+			m_window.setView(m_camera);
+		}
+	}
 }
 
 void Client::receive()
@@ -127,6 +148,12 @@ void Client::receive()
 				m_packet >> objectId;
 				m_drawableObjects.erase(objectId);
 				break;
+
+			case NetHeader::Assign:
+				m_packet >> objectId;
+				m_myObject = objectId;
+				std::cout << "assigned to object: " << m_myObject << std::endl;
+				break;
 		}
 	}
 }
@@ -143,6 +170,17 @@ void Client::render()
 		body.setRadius(obj.second.width/2.0f);
 		m_window.draw(body);
 	}
+
+	/*if (m_drawableObjects.find(m_myObject) != m_drawableObjects.end())
+	{
+		sf::Vector2f pos(m_drawableObjects[m_myObject].x, m_drawableObjects[m_myObject].y);
+
+		if (m_camera.getCenter() != pos)
+		{
+			m_camera.setCenter(pos);
+			m_window.setView(m_camera);
+		}
+	}*/
 
 	m_window.display();
 }

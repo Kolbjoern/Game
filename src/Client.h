@@ -29,8 +29,10 @@ class Client
 		void render();
 
 		std::unordered_map<int, DrawableObject> m_drawableObjects;
+		int m_myObject;
 
 		sf::RenderWindow m_window;
+		sf::View m_camera;
 		sf::UdpSocket m_socket;
 		sf::IpAddress m_serverIp;
 		sf::Packet m_packet;
