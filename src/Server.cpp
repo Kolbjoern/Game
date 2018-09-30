@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "net/NetHeader.h"
 #include "ecs/Systems/PhysicsSystem.h"
 #include "ecs/Systems/DeathSystem.h"
 
@@ -73,16 +74,14 @@ void Server::receive()
 	{
 		m_packet >> header;
 
-		switch (header)
+		switch (static_cast<NetHeader>(header))
 		{
-			// REGISTRATION
 			// TODO: init registration before the game starts
-			case 0:
+			case NetHeader::Register:
 				registerClient(sender, port);
 				break;
 
-			// MOVE
-			case 1:
+			case NetHeader::Move:
 				sf::Vector2f direction;
 				m_packet >> direction.x >> direction.y;
 				registerAction(sender, port, direction);
@@ -174,7 +173,7 @@ void Server::update(float deltaTime)
 	DeathSystem::update(deltaTime, m_deathRow, m_ageComponents);
 
 	int objId;
-	sf::Uint8 header = 3;//"DRAWABLE"
+	sf::Uint8 header = static_cast<int>(NetHeader::Draw);
 	for (std::pair<int, GraphicsComponent> graphic : m_graphicsComps)
 	{
 		objId = graphic.first;
@@ -203,7 +202,7 @@ void Server::purgeTheDead()
 		m_collisionComps.erase(id);
 		m_ageComponents.erase(id);
 
-		sf::Uint8 header = 4;//DEATH
+		sf::Uint8 header = static_cast<int>(NetHeader::Death);
 		m_packet << header << id;
 
 		for (std::pair<std::string, ClientInfo> client : m_clients)

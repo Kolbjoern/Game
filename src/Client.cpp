@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include "net/NetHeader.h"
+
 void Client::run()
 {
 	init();
@@ -37,7 +39,7 @@ void Client::init()
 	m_serverIp = input;
 
 	//register to server
-	sf::Uint8 header = 0;//"REGISTER";
+	sf::Uint8 header = static_cast<int>(NetHeader::Register);
 	m_packet << header;
 	m_socket.send(m_packet, m_serverIp, 9966);
 	m_packet.clear();
@@ -95,7 +97,7 @@ void Client::update(float deltaTime)
 
 	if (direction.x != 0 || direction.y != 0)
 	{
-		sf::Uint8 header = 1;//"MOVE";
+		sf::Uint8 header = static_cast<int>(NetHeader::Move);
 		m_packet << header << direction.x << direction.y;
 		m_socket.send(m_packet, m_serverIp, 9966);
 		m_packet.clear();
@@ -114,17 +116,14 @@ void Client::receive()
 	{
 		m_packet >> header;
 
-		switch (header)
+		switch (static_cast<NetHeader>(header))
 		{
-			// DRAWABLE
-			case 3:
-				//DrawableObject obj;
+			case NetHeader::Draw:
 				m_packet >> objectId >> obj.x >> obj.y >> obj.width >> obj.color.r >> obj.color.g >> obj.color.b;
 				m_drawableObjects[objectId] = obj;
 				break;
 
-			// DEATH
-			case 4:
+			case NetHeader::Death:
 				m_packet >> objectId;
 				m_drawableObjects.erase(objectId);
 				break;
