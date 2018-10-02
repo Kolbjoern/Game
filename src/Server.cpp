@@ -82,7 +82,29 @@ void Server::receive()
 			case NetHeader::Action:
 				sf::Uint8 action;
 				sf::Vector2f direction;
-				m_packet >> action >> direction.x >> direction.y;
+				m_packet >> action;
+
+				if (action == 10)
+				{
+					sf::Uint8 move;
+					m_packet >> move;
+					int movement = static_cast<int>(move);
+
+					if (movement & 1)
+						direction.x = -1.0f;
+
+					if (movement & 2)
+						direction.x = 1.0f;
+
+					if (movement & 4)
+						direction.y = -1.0f;
+
+					if (movement & 8)
+						direction.y = 1.0f;
+				}
+				else
+					m_packet >> direction.x >> direction.y;
+
 				registerAction(sender, port, action, direction);
 				m_packet.clear();
 				break;

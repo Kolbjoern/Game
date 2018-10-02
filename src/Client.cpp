@@ -91,25 +91,25 @@ void Client::handleInput()
 
 void Client::update(float deltaTime)
 {
-	sf::Vector2f direction(0.0f, 0.0f);
+	sf::Uint8 movement = 0;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		direction.x = -1.0f;
+		movement += 1;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		direction.x = 1.0f;
+		movement += 2;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		direction.y = -1.0f;
+		movement += 4;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		direction.y = 1.0f;
+		movement += 8;
 
-	if (direction.x != 0 || direction.y != 0)
+	if (movement != 0)
 	{
 		sf::Uint8 header = static_cast<int>(NetHeader::Action);
 		sf::Uint8 action = 10;
-		m_packet << header << action << direction.x << direction.y;
+		m_packet << header << action << movement;
 		m_socket.send(m_packet, m_serverIp, 9966);
 		m_packet.clear();
 	}
