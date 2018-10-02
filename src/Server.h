@@ -5,7 +5,6 @@
 #include <utility>
 
 #include <SFML/Network.hpp>
-#include <SFML/System/Vector2.hpp>
 
 #include "utils/LoopTimer.h"
 #include "ecs/Components.h"
@@ -41,8 +40,7 @@ class Server
 		std::unordered_map<std::string, struct ClientInfo> m_clients;
 		std::vector<std::pair<int, struct ClientAction>> m_actions;
 		std::unordered_map<int, PositionComponent> m_positionComps;
-		std::unordered_map<int, AccelerationComponent> m_accelerationComps;
-		std::unordered_map<int, VelocityComponent> m_velocityComps;
+		std::unordered_map<int, MotionComponent> m_motionComps;
 		std::unordered_map<int, GraphicsComponent> m_graphicsComps;
 		std::unordered_map<int, CollisionComponent> m_collisionComps;
 		std::unordered_map<int, AgeComponent> m_ageComponents;

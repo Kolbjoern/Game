@@ -7,10 +7,8 @@
 
 namespace PhysicsSystem
 {
-	void update(float deltaTime, 
-				std::vector<int> &deathRow,
+	void update(float deltaTime,
 				std::unordered_map<int, PositionComponent> &pos,
-				std::unordered_map<int, AccelerationComponent> &acc,
-				std::unordered_map<int, VelocityComponent> &vel,
+				std::unordered_map<int, MotionComponent> &mot,
 				std::unordered_map<int, CollisionComponent> &col);
 };

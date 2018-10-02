@@ -23,7 +23,7 @@ void Server::run()
 		update(iterationTime);
 		purgeTheDead();
 
-		sf::sleep(sf::milliseconds(16.66f));// - iterationTime/1000));
+		sf::sleep(sf::milliseconds(16.66f - iterationTime/1000));
 	}
 }
 
@@ -53,11 +53,6 @@ void Server::init()
 	CollisionComponent col;
 	col.width = 200.0f;
 	m_collisionComps.emplace(objId, col);
-
-	AgeComponent age;
-	age.lifeLived = 0.0f;
-	age.lifeTime = 10.0f;
-	//m_ageComponents.emplace(objId, age);
 
 	std::cout << "SERVER::INITIALIZED" << std::endl;
 	std::cout << "HOST ADDRESS:" << std::endl;
@@ -114,14 +109,12 @@ void Server::registerClient(sf::IpAddress &address, unsigned short &port)
 		pos.y = 0.0f;
 		m_positionComps.emplace(objId, pos);
 
-		AccelerationComponent acc;
-		acc.value = 25.0f;
-		m_accelerationComps.emplace(objId, acc);
-
-		VelocityComponent vel;
-		vel.x = 0.0f;
-		vel.y = 0.0f;
-		m_velocityComps.emplace(objId, vel);
+		MotionComponent mot;
+		mot.velocity = sf::Vector2f(0.0f, 0.0f);
+		mot.direction = sf::Vector2f(0.0f, 0.0f);
+		mot.speed = 25.0f;
+		mot.friction = 0.06f;
+		m_motionComps.emplace(objId, mot);
 
 		GraphicsComponent gra;
 		gra.width = 50.0f;
@@ -172,11 +165,8 @@ void Server::update(float deltaTime)
 		{
 			// MOVE
 			case 10:
-				if (m_accelerationComps.find(objectId) != m_accelerationComps.end())
-				{
-					m_accelerationComps[objectId].dirX = clientAct.direction.x;
-					m_accelerationComps[objectId].dirY = clientAct.direction.y;
-				}
+				if (m_motionComps.find(objectId) != m_motionComps.end())
+					m_motionComps[objectId].direction = clientAct.direction;
 				break;
 
 			// SHOOT
@@ -192,10 +182,12 @@ void Server::update(float deltaTime)
 				pos.y = gunslingerPos.y;
 				m_positionComps.emplace(newId, pos);
 
-				VelocityComponent vel;
-				vel.x = 15.0f * normalized.x;
-				vel.y = 15.0f * normalized.y;
-				m_velocityComps.emplace(newId, vel);
+				MotionComponent mot;
+				mot.velocity = sf::Vector2f(0.0f, 0.0f);
+				mot.direction = normalized;
+				mot.speed = 500.0f;
+				mot.friction = 0.0f;
+				m_motionComps.emplace(newId, mot);
 
 				AgeComponent age;
 				age.lifeLived = 0.0f;
@@ -210,7 +202,7 @@ void Server::update(float deltaTime)
 		}
 	}
 
-	PhysicsSystem::update(deltaTime, m_deathRow, m_positionComps, m_accelerationComps, m_velocityComps, m_collisionComps);
+	PhysicsSystem::update(deltaTime, m_positionComps, m_motionComps, m_collisionComps);
 	DeathSystem::update(deltaTime, m_deathRow, m_ageComponents);
 
 	int objId;
@@ -237,8 +229,7 @@ void Server::purgeTheDead()
 	{
 		int id = m_deathRow[i];
 		m_positionComps.erase(id);
-		m_accelerationComps.erase(id);
-		m_velocityComps.erase(id);
+		m_motionComps.erase(id);
 		m_graphicsComps.erase(id);
 		m_collisionComps.erase(id);
 		m_ageComponents.erase(id);

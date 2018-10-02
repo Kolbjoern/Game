@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/System/Vector2.hpp>
 
 struct PositionComponent
 {
@@ -8,17 +9,12 @@ struct PositionComponent
 	float y;
 };
 
-struct AccelerationComponent
+struct MotionComponent
 {
-	float value;
-	float dirX;
-	float dirY;
-};
-
-struct VelocityComponent
-{
-	float x;
-	float y;
+	sf::Vector2f velocity;
+	sf::Vector2f direction;
+	float speed;
+	float friction;
 };
 
 struct GraphicsComponent

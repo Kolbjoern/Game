@@ -7,32 +7,26 @@
 namespace PhysicsSystem
 {
 	void update(float deltaTime,
-				std::vector<int> &deathRow,
 				std::unordered_map<int, PositionComponent> &pos,
-				std::unordered_map<int, AccelerationComponent> &acc,
-				std::unordered_map<int, VelocityComponent> &vel,
+				std::unordered_map<int, MotionComponent> &mot,
 				std::unordered_map<int, CollisionComponent> &col)
 	{
 		int objId;
-		for (std::pair<int, VelocityComponent> velocity : vel)
+		for (std::pair<int, MotionComponent> motion : mot)
 		{
-			objId = velocity.first;
+			objId = motion.first;
 
-			if (acc.find(objId) != acc.end())
-			{
-				// acceleration affects the objects velocity
-				vel[objId].x = velocity.second.x + acc[objId].dirX * acc[objId].value * deltaTime;
-				vel[objId].y = velocity.second.y + acc[objId].dirY * acc[objId].value * deltaTime;
+			// add acceleration direction
+			mot[objId].velocity.x = motion.second.velocity.x + motion.second.direction.x * motion.second.speed * deltaTime;
+			mot[objId].velocity.y = motion.second.velocity.y + motion.second.direction.y * motion.second.speed * deltaTime;
 
-				// remove acceleration
-				acc[objId].dirX = 0.0f;
-				acc[objId].dirY = 0.0f;
-			}
+			// reset direction
+			mot[objId].direction = sf::Vector2f(0.0f, 0.0f);
 
 			if (pos.find(objId) != pos.end())
 			{
-				float newX = pos[objId].x + velocity.second.x;
-				float newY = pos[objId].y + velocity.second.y;
+				float newX = pos[objId].x + motion.second.velocity.x;
+				float newY = pos[objId].y + motion.second.velocity.y;
 			
 				// VALIDATE AND HANDLE COLLISION
 				pos[objId].x = newX;
@@ -57,22 +51,21 @@ namespace PhysicsSystem
 						float collisionDepth = MIN_DISTANCE - dist;
 						if (collisionDepth > 0)
 						{
-							deathRow.push_back(objId);
 							//noramlize depth vector
 							sf::Vector2f depthVec = VectorMath::normalize(distVec) * collisionDepth;
 							
 							pos[objId].x += depthVec.x;
 							pos[objId].y += depthVec.y;
 
-							vel[objId].x *= -0.25f;
-							vel[objId].y *= -0.25f;
+							mot[objId].velocity.x *= -0.25f;
+							mot[objId].velocity.y *= -0.25f;
 						}
 					}
 				}
 
 				// slow down
-				vel[objId].x *= 0.94f;
-				vel[objId].y *= 0.94f;
+				mot[objId].velocity.x *= (1 - motion.second.friction);
+				mot[objId].velocity.y *= (1 - motion.second.friction);
 			}
 		}
 	}
