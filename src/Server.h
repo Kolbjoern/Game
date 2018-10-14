@@ -6,21 +6,9 @@
 
 #include <SFML/Network.hpp>
 
+#include "managers/ClientManager.h"
 #include "utils/LoopTimer.h"
 #include "ecs/Components.h"
-
-struct ClientInfo
-{
-	int objectId;
-	sf::IpAddress address;
-	unsigned short port;
-};
-
-struct ClientAction
-{
-	int action;
-	sf::Vector2f direction;//magnitude
-};
 
 class Server
 {
@@ -32,13 +20,8 @@ class Server
 		void receive();
 		void update(float deltaTime);
 
-		void registerClient(sf::IpAddress &address, unsigned short &port);
-		void registerAction(sf::IpAddress &address, unsigned short &port, sf::Uint8 action, sf::Vector2f &direction);
-
 		void purgeTheDead();
 
-		std::unordered_map<std::string, struct ClientInfo> m_clients;
-		std::vector<std::pair<int, struct ClientAction>> m_actions;
 		std::unordered_map<int, PositionComponent> m_positionComps;
 		std::unordered_map<int, MotionComponent> m_motionComps;
 		std::unordered_map<int, GraphicsComponent> m_graphicsComps;
@@ -52,5 +35,6 @@ class Server
 		sf::UdpSocket m_socket;
 		sf::Packet m_packet;
 
+		ClientManager m_clientManager;
 		LoopTimer m_loopTimer;
 };
