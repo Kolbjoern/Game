@@ -33,3 +33,10 @@ struct AgeComponent
 	float lifeTime;
 	float lifeLived;
 };
+
+struct Action1Component
+{
+	int id;
+	bool triggered;
+	sf::Vector2f vector;
+};

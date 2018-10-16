@@ -2,6 +2,7 @@
 
 #include <climits>
 
+#include "../factories/ObjectFactory.h"
 #include "../utils/VectorMath.h"
 
 bool ClientManager::registerClient(sf::IpAddress& address, unsigned short port)
@@ -19,18 +20,35 @@ bool ClientManager::registerClient(sf::IpAddress& address, unsigned short port)
 	return true;
 }
 
-void ClientManager::registerAction(sf::IpAddress& address, unsigned short port, sf::Uint8 action, sf::Vector2f& direction)
+void ClientManager::registerInput(sf::IpAddress& address, unsigned short port, 
+									sf::Uint8 action, sf::Vector2f& direction,
+									std::unordered_map<int, MotionComponent>& mot,
+									std::unordered_map<int, Action1Component>& act1)
 {
 	std::string uniqueId = getUniqueId(address, port);
 	if (!clientExists(uniqueId))
 		return;
 
-	ClientAction act;
-	act.actionId = static_cast<int>(action);
-	act.direction = direction;
+	int oId = m_clients[uniqueId].objectId;
 
-	m_clients[uniqueId].actions.emplace(act.actionId, act);
-	m_actions.emplace(uniqueId, m_clients[uniqueId].objectId);
+	switch (static_cast<int>(action))
+	{
+		// MOVE
+		case 10:
+			if (mot.find(oId) != mot.end())
+				mot[oId].direction = direction;
+			break;
+
+		// ACTIONS
+		case 20:
+			if (act1.find(oId) != act1.end())
+			{
+				// enable more actions to fill the action slots
+				act1[oId].vector = direction;
+				act1[oId].triggered = true;
+			}
+			break;
+	}
 }
 
 void ClientManager::setObjectToClient(sf::IpAddress& address, unsigned short port, int objectId)
@@ -40,59 +58,6 @@ void ClientManager::setObjectToClient(sf::IpAddress& address, unsigned short por
 		return;
 
 	m_clients[uniqueId].objectId = objectId;
-}
-
-void ClientManager::update(float deltaTime, int& counter, std::unordered_map<int, MotionComponent>& mot, std::unordered_map<int, PositionComponent>& pos, std::unordered_map<int, AgeComponent>& age, std::unordered_map<int, GraphicsComponent>& gra)
-{
-	for (std::pair<std::string, int> clientAction : m_actions)
-	{
-		int oId = clientAction.second;
-		for (std::pair<int, ClientAction> currentAction : m_clients[clientAction.first].actions)
-		{
-			ClientAction action = currentAction.second;
-			switch (action.actionId)
-			{
-				// MOVE
-				case 10:
-					if (mot.find(oId) != mot.end())
-						mot[oId].direction = action.direction;
-					break;
-
-				// SHOOT
-				case 20:
-					sf::Vector2f gunslingerPos = sf::Vector2f(pos[oId].x, pos[oId].y);
-					sf::Vector2f fireDir = action.direction - gunslingerPos;
-					sf::Vector2f normalized = VectorMath::normalize(fireDir);
-
-					int newId = counter++;
-
-					PositionComponent posComp;
-					posComp.x = gunslingerPos.x;
-					posComp.y = gunslingerPos.y;
-					pos.emplace(newId, posComp);
-
-					MotionComponent motComp;
-					motComp.velocity = sf::Vector2f(0.0f, 0.0f);
-					motComp.direction = normalized;
-					motComp.speed = 500.0f;
-					motComp.friction = 0.0f;
-					mot.emplace(newId, motComp);
-
-					AgeComponent ageComp;
-					ageComp.lifeTime = 2.0f;
-					ageComp.lifeLived = 0.0f;
-					age.emplace(newId, ageComp);
-
-					GraphicsComponent graComp;
-					graComp.width = 15.0f;
-					graComp.color = sf::Color(10.0f, 255.0f, 50.0f);
-					gra.emplace(newId, graComp);
-					break;
-			}
-		}
-		m_clients[clientAction.first].actions.clear();
-	}
-	m_actions.clear();
 }
 
 std::unordered_map<std::string, ClientInfo> ClientManager::getClients()

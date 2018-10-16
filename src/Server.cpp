@@ -5,6 +5,7 @@
 #include "net/NetHeader.h"
 #include "ecs/Systems/PhysicsSystem.h"
 #include "ecs/Systems/DeathSystem.h"
+#include "ecs/Systems/ActionSystem.h"
 #include "factories/ObjectFactory.h"
 #include "utils/VectorMath.h"
 
@@ -68,7 +69,7 @@ void Server::receive()
 				if (m_clientManager.registerClient(sender, port))
 				{
 					int objId = m_currentObjectId++;
-					ObjectFactory::createPlayer(objId, m_positionComps, m_motionComps, m_graphicsComps, m_collisionComps);
+					ObjectFactory::createPlayer(objId, m_positionComps, m_motionComps, m_graphicsComps, m_collisionComps, m_action1Comps);
 					m_clientManager.setObjectToClient(sender, port, objId);
 
 					// send registration info back
@@ -105,7 +106,7 @@ void Server::receive()
 				else
 					m_packet >> direction.x >> direction.y;
 
-				m_clientManager.registerAction(sender, port, action, direction);
+				m_clientManager.registerInput(sender, port, action, direction, m_motionComps, m_action1Comps);
 				m_packet.clear();
 				break;
 		}
@@ -114,8 +115,9 @@ void Server::receive()
 
 void Server::update(float deltaTime)
 {
-	m_clientManager.update(deltaTime, m_currentObjectId, m_motionComps, m_positionComps, m_ageComponents, m_graphicsComps);
+	//m_clientManager.update(m_motionComps, m_action1Comps);
 
+	ActionSystem::update(deltaTime, m_currentObjectId, m_action1Comps, m_positionComps, m_motionComps, m_ageComponents, m_graphicsComps);
 	PhysicsSystem::update(deltaTime, m_positionComps, m_motionComps, m_collisionComps);
 	DeathSystem::update(deltaTime, m_deathRow, m_ageComponents);
 
