@@ -157,16 +157,7 @@ void Client::receive()
 void Client::render()
 {
 	m_window.clear();
-
-	sf::CircleShape body;
-	for (std::pair<int, DrawableObject> obj : m_drawableObjects)
-	{
-		body.setPosition(obj.second.x - obj.second.width/2.0f, obj.second.y - obj.second.width/2.0f);
-		body.setFillColor(obj.second.color);
-		body.setRadius(obj.second.width/2.0f);
-		m_window.draw(body);
-	}
-
+	
 	if (m_drawableObjects.find(m_myObject) != m_drawableObjects.end())
 	{
 		sf::Vector2f pos(m_drawableObjects[m_myObject].x, m_drawableObjects[m_myObject].y);
@@ -176,6 +167,15 @@ void Client::render()
 			m_camera.setCenter(pos);
 			m_window.setView(m_camera);
 		}
+	}
+
+	sf::CircleShape body;
+	for (std::pair<int, DrawableObject> obj : m_drawableObjects)
+	{
+		body.setPosition(obj.second.x - obj.second.width/2.0f, obj.second.y - obj.second.width/2.0f);
+		body.setFillColor(obj.second.color);
+		body.setRadius(obj.second.width/2.0f);
+		m_window.draw(body);
 	}
 
 	m_window.display();

@@ -2,9 +2,6 @@
 
 #include <climits>
 
-#include "../factories/ObjectFactory.h"
-#include "../utils/VectorMath.h"
-
 bool ClientManager::registerClient(sf::IpAddress& address, unsigned short port)
 {
 	std::string uniqueId = getUniqueId(address, port);

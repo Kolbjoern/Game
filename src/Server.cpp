@@ -115,8 +115,6 @@ void Server::receive()
 
 void Server::update(float deltaTime)
 {
-	//m_clientManager.update(m_motionComps, m_action1Comps);
-
 	ActionSystem::update(deltaTime, m_currentObjectId, m_action1Comps, m_positionComps, m_motionComps, m_ageComponents, m_graphicsComps);
 	PhysicsSystem::update(deltaTime, m_positionComps, m_motionComps, m_collisionComps);
 	DeathSystem::update(deltaTime, m_deathRow, m_ageComponents);
@@ -149,6 +147,7 @@ void Server::purgeTheDead()
 		m_graphicsComps.erase(id);
 		m_collisionComps.erase(id);
 		m_ageComponents.erase(id);
+		m_action1Comps.erase(id);
 
 		sf::Uint8 header = static_cast<int>(NetHeader::Death);
 		m_packet << header << id;
