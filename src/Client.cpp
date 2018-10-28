@@ -142,7 +142,7 @@ void Client::receive()
 		switch (static_cast<NetHeader>(header))
 		{
 			case NetHeader::Draw:
-				m_packet >> objectId >> obj.x >> obj.y >> obj.width >> obj.color.r >> obj.color.g >> obj.color.b;
+				m_packet >> objectId >> obj.x >> obj.y >> obj.width >> obj.shape >> obj.color.r >> obj.color.g >> obj.color.b;
 				m_drawableObjects[objectId] = obj;
 				break;
 
@@ -169,13 +169,24 @@ void Client::render()
 		}
 	}
 
-	sf::CircleShape body;
+	sf::CircleShape circle;
+	sf::RectangleShape rect;
 	for (std::pair<int, DrawableObject> obj : m_drawableObjects)
 	{
-		body.setPosition(obj.second.x - obj.second.width/2.0f, obj.second.y - obj.second.width/2.0f);
-		body.setFillColor(obj.second.color);
-		body.setRadius(obj.second.width/2.0f);
-		m_window.draw(body);
+		if (obj.second.shape == 0)
+		{
+			circle.setPosition(obj.second.x - obj.second.width/2.0f, obj.second.y - obj.second.width/2.0f);
+			circle.setFillColor(obj.second.color);
+			circle.setRadius(obj.second.width/2.0f);
+			m_window.draw(circle);
+		}
+		else
+		{
+			rect.setPosition(obj.second.x, obj.second.y);
+			rect.setFillColor(obj.second.color);
+			rect.setSize(sf::Vector2f(obj.second.width, obj.second.width));
+			m_window.draw(rect);
+		}
 	}
 
 	m_window.display();

@@ -11,6 +11,10 @@ namespace ObjectFactory
 		std::unordered_map<int, GraphicsComponent>& gra,
 		std::unordered_map<int, CollisionComponent>& col);
 
+	void createTile(int objId,
+		std::unordered_map<int, PositionComponent>& pos,
+		std::unordered_map<int, GraphicsComponent>& gra);
+
 	void createPlayer(int objId,
 		std::unordered_map<int, PositionComponent>& pos,
 		std::unordered_map<int, MotionComponent>& mot,

@@ -10,6 +10,14 @@
 #include "utils/LoopTimer.h"
 #include "ecs/Components.h"
 
+struct Map
+{
+	float tileSize;
+	int width;
+	int height;
+	std::vector<int> tileData;
+};
+
 class Server
 {
 	public:
@@ -38,4 +46,5 @@ class Server
 
 		ClientManager m_clientManager;
 		LoopTimer m_loopTimer;
+		Map m_map;
 };

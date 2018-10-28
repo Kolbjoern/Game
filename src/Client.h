@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Network.hpp>
 
 #include "utils/LoopTimer.h"
@@ -13,6 +14,7 @@ struct DrawableObject
 	float x;
 	float y;
 	float width;
+	int shape;
 	sf::Color color;
 };
 
@@ -28,7 +30,7 @@ class Client
 		void receive();
 		void render();
 
-		std::unordered_map<int, DrawableObject> m_drawableObjects;
+		std::map<int, DrawableObject> m_drawableObjects;
 		int m_myObject;
 
 		sf::RenderWindow m_window;

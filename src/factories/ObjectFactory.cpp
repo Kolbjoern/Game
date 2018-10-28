@@ -14,12 +14,29 @@ namespace ObjectFactory
 
 		GraphicsComponent g;
 		g.width = 200.0f;
+		g.shape = 0;//CIRCLE
 		g.color = sf::Color(255.0f, 255.0f, 255.0f);
 		gra.emplace(objId, g);
 
 		CollisionComponent c;
 		c.width = 200.0f;
 		col.emplace(objId, c);
+	}
+
+	void createTile(int objId,
+		std::unordered_map<int, PositionComponent>& pos,
+		std::unordered_map<int, GraphicsComponent>& gra)
+	{
+		PositionComponent p;
+		p.x = 0.0f;
+		p.y = 0.0f;
+		pos.emplace(objId, p);
+
+		GraphicsComponent g;
+		g.width = 8.0f;
+		g.shape = 1;//QUAD
+		g.color = sf::Color(255.0f, 255.0f, 255.0f);
+		gra.emplace(objId, g);
 	}
 
 	void createPlayer(int objId,
@@ -43,6 +60,7 @@ namespace ObjectFactory
 
 		GraphicsComponent g;
 		g.width = 50.0f;
+		g.shape = 0;//CIRCLE
 		g.color = sf::Color(255.0f, 50.0f, 60.0f);
 		gra.emplace(objId, g);
 
@@ -82,6 +100,7 @@ namespace ObjectFactory
 
 		GraphicsComponent g;
 		g.width = 15.0f;
+		g.shape = 0;//CIRCLE
 		g.color = sf::Color(10.0f, 255.0f, 50.0f);
 		gra.emplace(objId, g);
 	}

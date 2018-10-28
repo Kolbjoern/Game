@@ -20,6 +20,7 @@ struct MotionComponent
 struct GraphicsComponent
 {
 	float width;
+	int shape;
 	sf::Color color;
 };
 
