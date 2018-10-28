@@ -76,7 +76,7 @@ void Server::init()
 
 	// OSTACLE FOR COLLISION TESTING
 	int objId = m_currentObjectId++;
-	ObjectFactory::createTestObstacle(objId, m_positionComps, m_graphicsComps, m_collisionComps);
+	ObjectFactory::createTestObstacle(objId, m_positionComps, m_graphicsComps, m_collisionComps, m_healtComps);
 
 	std::cout << "SERVER::INITIALIZED" << std::endl;
 	std::cout << "HOST ADDRESS:" << std::endl;
@@ -88,9 +88,9 @@ void Server::update(float deltaTime)
 {
 	m_clientManager.receive(m_currentObjectId, m_socket, m_packet, m_positionComps, m_motionComps, m_graphicsComps, m_collisionComps, m_action1Comps);
 
-	ActionSystem::update(deltaTime, m_currentObjectId, m_action1Comps, m_positionComps, m_motionComps, m_ageComponents, m_graphicsComps);
-	PhysicsSystem::update(deltaTime, m_positionComps, m_motionComps, m_collisionComps);
-	DeathSystem::update(deltaTime, m_deathRow, m_ageComponents);
+	ActionSystem::update(deltaTime, m_currentObjectId, m_action1Comps, m_positionComps, m_motionComps, m_ageComps, m_graphicsComps);
+	PhysicsSystem::update(deltaTime, m_positionComps, m_motionComps, m_collisionComps, m_healtComps);
+	DeathSystem::update(deltaTime, m_deathRow, m_ageComps, m_healtComps);
 
 	m_clientManager.draw(m_socket, m_packet, m_positionComps, m_graphicsComps);
 }
@@ -104,7 +104,8 @@ void Server::purgeTheDead()
 		m_motionComps.erase(id);
 		m_graphicsComps.erase(id);
 		m_collisionComps.erase(id);
-		m_ageComponents.erase(id);
+		m_ageComps.erase(id);
+		m_healtComps.erase(id);
 		m_action1Comps.erase(id);
 
 		m_clientManager.destroyObject(id, m_socket, m_packet);

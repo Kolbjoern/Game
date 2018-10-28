@@ -9,7 +9,8 @@ namespace ObjectFactory
 	void createTestObstacle(int objId,
 		std::unordered_map<int, PositionComponent>& pos,
 		std::unordered_map<int, GraphicsComponent>& gra,
-		std::unordered_map<int, CollisionComponent>& col);
+		std::unordered_map<int, CollisionComponent>& col,
+		std::unordered_map<int, HealthComponent>& hea);
 
 	void createTile(int objId,
 		std::unordered_map<int, PositionComponent>& pos,

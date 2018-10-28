@@ -8,7 +8,8 @@
 namespace PhysicsSystem
 {
 	void update(float deltaTime,
-				std::unordered_map<int, PositionComponent> &pos,
-				std::unordered_map<int, MotionComponent> &mot,
-				std::unordered_map<int, CollisionComponent> &col);
+				std::unordered_map<int, PositionComponent>& pos,
+				std::unordered_map<int, MotionComponent>& mot,
+				std::unordered_map<int, CollisionComponent>& col,
+				std::unordered_map<int, HealthComponent>& hea);
 };

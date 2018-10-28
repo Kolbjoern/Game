@@ -7,9 +7,10 @@
 namespace PhysicsSystem
 {
 	void update(float deltaTime,
-				std::unordered_map<int, PositionComponent> &pos,
-				std::unordered_map<int, MotionComponent> &mot,
-				std::unordered_map<int, CollisionComponent> &col)
+				std::unordered_map<int, PositionComponent>& pos,
+				std::unordered_map<int, MotionComponent>& mot,
+				std::unordered_map<int, CollisionComponent>& col,
+				std::unordered_map<int, HealthComponent>& hea)
 	{
 		int objId;
 		for (std::pair<int, MotionComponent> motion : mot)
@@ -49,8 +50,19 @@ namespace PhysicsSystem
 
 						float dist = VectorMath::getMagnitude(distVec);
 						float collisionDepth = MIN_DISTANCE - dist;
-						if (collisionDepth > 0)
+						if (collisionDepth > 0) // COLLISION
 						{
+							if (hea.find(objId) != hea.end())
+							{
+								// inflict damage to object 1
+								hea[objId].currentHealth -= 1; // some basic damage value for now
+							}
+
+							if (hea.find(i) != hea.end())
+							{
+								hea[i].currentHealth -= 1;
+							}
+
 							//noramlize depth vector
 							sf::Vector2f depthVec = VectorMath::normalize(distVec) * collisionDepth;
 							

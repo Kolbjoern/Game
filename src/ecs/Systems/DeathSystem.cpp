@@ -2,17 +2,27 @@
 
 namespace DeathSystem
 {
-	void update(float deltaTime, std::vector<int> &deathRow, std::unordered_map<int, AgeComponent> &age)
+	void update(float deltaTime, std::vector<int>& deathRow,
+				std::unordered_map<int, AgeComponent>& age,
+				std::unordered_map<int, HealthComponent>& hea)
 	{
-		int objId;
+		int oId;
 		for (std::pair<int, AgeComponent> currentAge : age)
 		{
-			objId = currentAge.first;
+			oId = currentAge.first;
 
 			if (currentAge.second.lifeLived > currentAge.second.lifeTime)
-				deathRow.push_back(objId);
+				deathRow.push_back(oId);
 			else
-				age[objId].lifeLived += deltaTime;
+				age[oId].lifeLived += deltaTime;
+		}
+
+		for (std::pair<int, HealthComponent> health : hea)
+		{
+			oId = health.first;
+
+			if (health.second.currentHealth <= 0)
+				deathRow.push_back(oId); // have to check if already exist
 		}
 	}
 };

@@ -35,6 +35,12 @@ struct AgeComponent
 	float lifeLived;
 };
 
+struct HealthComponent
+{
+	int maxHealth;
+	int currentHealth;
+};
+
 struct Action1Component
 {
 	int id;

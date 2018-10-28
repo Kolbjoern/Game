@@ -5,7 +5,8 @@ namespace ObjectFactory
 	void createTestObstacle(int objId,
 		std::unordered_map<int, PositionComponent>& pos,
 		std::unordered_map<int, GraphicsComponent>& gra,
-		std::unordered_map<int, CollisionComponent>& col)
+		std::unordered_map<int, CollisionComponent>& col,
+		std::unordered_map<int, HealthComponent>& hea)
 	{
 		PositionComponent p;
 		p.x = 600.0f;
@@ -21,6 +22,11 @@ namespace ObjectFactory
 		CollisionComponent c;
 		c.width = 200.0f;
 		col.emplace(objId, c);
+
+		HealthComponent h;
+		h.maxHealth = 3;
+		h.currentHealth = 3;
+		hea.emplace(objId, h);
 	}
 
 	void createTile(int objId,

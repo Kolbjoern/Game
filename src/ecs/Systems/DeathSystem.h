@@ -7,5 +7,7 @@
 
 namespace DeathSystem
 {
-	void update(float deltaTime, std::vector<int> &deathRow, std::unordered_map<int, AgeComponent> &age);
+	void update(float deltaTime, std::vector<int>& deathRow,
+				std::unordered_map<int, AgeComponent>& age,
+				std::unordered_map<int, HealthComponent>& hea);
 };
