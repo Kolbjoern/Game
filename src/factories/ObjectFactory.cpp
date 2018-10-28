@@ -77,6 +77,7 @@ namespace ObjectFactory
 		Action1Component a1;
 		a1.id = 11;
 		a1.triggered = false;
+		a1.reloadTimer = 0.0f;
 		a1.vector = sf::Vector2f(0.0f, 0.0f);
 		act1.emplace(objId, a1);
 	}

@@ -1,5 +1,6 @@
 #include "ActionSystem.h"
 
+#include "../../data/Actions.h"
 #include "../../factories/ObjectFactory.h"
 #include "../../utils/VectorMath.h"
 
@@ -20,19 +21,27 @@ namespace ActionSystem
 			// SHOOT BASIC
 			if (action.second.id == 11)
 			{
-				if (pos.find(objId) != pos.end() && action.second.triggered)
+				if (pos.find(objId) != pos.end())
 				{
-					sf::Vector2f gunslingerPos = sf::Vector2f(pos[objId].x, pos[objId].y);
-					sf::Vector2f fireDirection = action.second.vector - gunslingerPos;
-					sf::Vector2f normalized = VectorMath::normalize(fireDirection);
+					act1[objId].reloadTimer += deltaTime;
+					if (action.second.triggered && (action.second.reloadTimer > shootBasic.fireRate))
+					{
+						act1[objId].reloadTimer = 0.0f;
 
-					int projectileId = counter++;
+						sf::Vector2f gunslingerPos = sf::Vector2f(pos[objId].x, pos[objId].y);
+						sf::Vector2f fireDirection = action.second.vector - gunslingerPos;
+						sf::Vector2f normalized = VectorMath::normalize(fireDirection);
 
-					ObjectFactory::createProjectile(projectileId, pos, mot, age, gra);
-					pos[projectileId].x = gunslingerPos.x;
-					pos[projectileId].y = gunslingerPos.y;
-					mot[projectileId].direction = normalized;
+						int projectileId = counter++;
 
+						ObjectFactory::createProjectile(projectileId, pos, mot, age, gra);
+						pos[projectileId].x = gunslingerPos.x;
+						pos[projectileId].y = gunslingerPos.y;
+						mot[projectileId].direction = normalized;
+						mot[projectileId].speed = shootBasic.bulletSpeed;
+						age[projectileId].lifeTime = shootBasic.lifeTime;
+						gra[projectileId].width = shootBasic.bulletWidth;
+					}
 					act1[objId].triggered = false;
 				}
 			}

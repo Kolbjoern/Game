@@ -45,5 +45,6 @@ struct Action1Component
 {
 	int id;
 	bool triggered;
+	float reloadTimer;
 	sf::Vector2f vector;
 };
