@@ -14,6 +14,7 @@ struct DrawableObject
 	float x;
 	float y;
 	float width;
+	float height;
 	int shape;
 	sf::Color color;
 };

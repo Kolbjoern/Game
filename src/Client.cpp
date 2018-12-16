@@ -142,7 +142,7 @@ void Client::receive()
 		switch (static_cast<NetHeader>(header))
 		{
 			case NetHeader::Draw:
-				m_packet >> objectId >> obj.x >> obj.y >> obj.width >> obj.shape >> obj.color.r >> obj.color.g >> obj.color.b;
+				m_packet >> objectId >> obj.x >> obj.y >> obj.width >> obj.height >> obj.shape >> obj.color.r >> obj.color.g >> obj.color.b;
 				m_drawableObjects[objectId] = obj;
 				break;
 
@@ -184,7 +184,7 @@ void Client::render()
 		{
 			rect.setPosition(obj.second.x, obj.second.y);
 			rect.setFillColor(obj.second.color);
-			rect.setSize(sf::Vector2f(obj.second.width, obj.second.width));
+			rect.setSize(sf::Vector2f(obj.second.width, obj.second.height));
 			m_window.draw(rect);
 		}
 	}

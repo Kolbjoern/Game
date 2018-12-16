@@ -3,6 +3,8 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Vector2.hpp>
 
+#include "../math/Geometry.h"
+
 struct PositionComponent
 {
 	float x;
@@ -20,13 +22,16 @@ struct MotionComponent
 struct GraphicsComponent
 {
 	float width;
-	int shape;
+	float height;
+	Shape shape;
 	sf::Color color;
 };
 
 struct CollisionComponent
 {
 	float width;
+	float height;
+	Shape shape;
 };
 
 struct AgeComponent

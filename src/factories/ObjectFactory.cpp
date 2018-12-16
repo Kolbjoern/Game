@@ -14,13 +14,16 @@ namespace ObjectFactory
 		pos.emplace(objId, p);
 
 		GraphicsComponent g;
-		g.width = 200.0f;
-		g.shape = 0;//CIRCLE
+		g.width = 400.0f;
+		g.height = 200.0f;
+		g.shape = Shape::Rectangle;
 		g.color = sf::Color(255.0f, 255.0f, 255.0f);
 		gra.emplace(objId, g);
 
 		CollisionComponent c;
-		c.width = 200.0f;
+		c.width = 400.0f;
+		c.height = 200.0f;
+		c.shape = Shape::Rectangle;
 		col.emplace(objId, c);
 
 		HealthComponent h;
@@ -31,7 +34,9 @@ namespace ObjectFactory
 
 	void createTile(int objId,
 		std::unordered_map<int, PositionComponent>& pos,
-		std::unordered_map<int, GraphicsComponent>& gra)
+		std::unordered_map<int, GraphicsComponent>& gra,
+		std::unordered_map<int, CollisionComponent>& col,
+		std::unordered_map<int, HealthComponent>& hea)
 	{
 		PositionComponent p;
 		p.x = 0.0f;
@@ -40,9 +45,21 @@ namespace ObjectFactory
 
 		GraphicsComponent g;
 		g.width = 8.0f;
-		g.shape = 1;//QUAD
+		g.height = 8.0f;
+		g.shape = Shape::Rectangle;
 		g.color = sf::Color(255.0f, 255.0f, 255.0f);
 		gra.emplace(objId, g);
+
+		CollisionComponent c;
+		c.width = 8.0f;
+		c.height = 8.0f;
+		c.shape = Shape::Rectangle;
+		col.emplace(objId, c);
+
+		HealthComponent h;
+		h.maxHealth = 2;
+		h.currentHealth = 2;
+		hea.emplace(objId, h);
 	}
 
 	void createPlayer(int objId,
@@ -53,8 +70,8 @@ namespace ObjectFactory
 		std::unordered_map<int, Action1Component>& act1)
 	{
 		PositionComponent p;
-		p.x = 0.0f;
-		p.y = 0.0f;
+		p.x = -100.0f;
+		p.y = -100.0f;
 		pos.emplace(objId, p);
 
 		MotionComponent m;
@@ -66,12 +83,13 @@ namespace ObjectFactory
 
 		GraphicsComponent g;
 		g.width = 50.0f;
-		g.shape = 0;//CIRCLE
+		g.shape = Shape::Circle;
 		g.color = sf::Color(255.0f, 50.0f, 60.0f);
 		gra.emplace(objId, g);
 
 		CollisionComponent c;
 		c.width = 50.0f;
+		c.shape = Shape::Circle;
 		col.emplace(objId, c);
 
 		Action1Component a1;
@@ -86,7 +104,9 @@ namespace ObjectFactory
 		std::unordered_map<int, PositionComponent>& pos,
 		std::unordered_map<int, MotionComponent>& mot,
 		std::unordered_map<int, AgeComponent>& age,
-		std::unordered_map<int, GraphicsComponent>& gra)
+		std::unordered_map<int, GraphicsComponent>& gra,
+		std::unordered_map<int, CollisionComponent>& col,
+		std::unordered_map<int, HealthComponent>& hea)
 	{
 		PositionComponent p;
 		p.x = 0.0f;
@@ -107,8 +127,18 @@ namespace ObjectFactory
 
 		GraphicsComponent g;
 		g.width = 15.0f;
-		g.shape = 0;//CIRCLE
+		g.shape = Shape::Circle;
 		g.color = sf::Color(10.0f, 255.0f, 50.0f);
 		gra.emplace(objId, g);
+
+		CollisionComponent c;
+		c.width = 15.0f;
+		c.shape = Shape::Circle;
+		col.emplace(objId, c);
+
+		HealthComponent h;
+		h.maxHealth = 1;
+		h.currentHealth = 1;
+		hea.emplace(objId, h);
 	}
 };

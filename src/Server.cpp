@@ -59,9 +59,7 @@ void Server::init()
 			tileObjId = m_currentObjectId++;
 			index = y * m_map.width + x;
 
-			continue;
-
-			ObjectFactory::createTile(tileObjId, m_positionComps, m_graphicsComps);
+			ObjectFactory::createTile(tileObjId, m_positionComps, m_graphicsComps, m_collisionComps, m_healthComps);
 			m_positionComps[tileObjId].x = (x * tileSize);
 			m_positionComps[tileObjId].y = (y * tileSize);
 
@@ -71,12 +69,13 @@ void Server::init()
 				m_graphicsComps[tileObjId].color = sf::Color(255.0f, 255.0f, 255.0f);
 
 			m_graphicsComps[tileObjId].width = tileSize;
+			m_graphicsComps[tileObjId].height = tileSize;
 		}
 	}
 
 	// OSTACLE FOR COLLISION TESTING
 	int objId = m_currentObjectId++;
-	ObjectFactory::createTestObstacle(objId, m_positionComps, m_graphicsComps, m_collisionComps, m_healtComps);
+	ObjectFactory::createTestObstacle(objId, m_positionComps, m_graphicsComps, m_collisionComps, m_healthComps);
 
 	std::cout << "SERVER::INITIALIZED" << std::endl;
 	std::cout << "HOST ADDRESS:" << std::endl;
@@ -88,9 +87,9 @@ void Server::update(float deltaTime)
 {
 	m_clientManager.receive(m_currentObjectId, m_socket, m_packet, m_positionComps, m_motionComps, m_graphicsComps, m_collisionComps, m_action1Comps);
 
-	ActionSystem::update(deltaTime, m_currentObjectId, m_action1Comps, m_positionComps, m_motionComps, m_ageComps, m_graphicsComps);
-	PhysicsSystem::update(deltaTime, m_positionComps, m_motionComps, m_collisionComps, m_healtComps);
-	DeathSystem::update(deltaTime, m_deathRow, m_ageComps, m_healtComps);
+	ActionSystem::update(deltaTime, m_currentObjectId, m_action1Comps, m_positionComps, m_motionComps, m_ageComps, m_graphicsComps, m_collisionComps, m_healthComps);
+	PhysicsSystem::update(deltaTime, m_positionComps, m_motionComps, m_collisionComps, m_healthComps);
+	DeathSystem::update(deltaTime, m_deathRow, m_ageComps, m_healthComps);
 
 	m_clientManager.draw(m_socket, m_packet, m_positionComps, m_graphicsComps);
 }
@@ -105,7 +104,7 @@ void Server::purgeTheDead()
 		m_graphicsComps.erase(id);
 		m_collisionComps.erase(id);
 		m_ageComps.erase(id);
-		m_healtComps.erase(id);
+		m_healthComps.erase(id);
 		m_action1Comps.erase(id);
 
 		m_clientManager.destroyObject(id, m_socket, m_packet);

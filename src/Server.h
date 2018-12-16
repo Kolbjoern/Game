@@ -35,7 +35,7 @@ class Server
 		std::unordered_map<int, GraphicsComponent> m_graphicsComps;
 		std::unordered_map<int, CollisionComponent> m_collisionComps;
 		std::unordered_map<int, AgeComponent> m_ageComps;
-		std::unordered_map<int, HealthComponent> m_healtComps;
+		std::unordered_map<int, HealthComponent> m_healthComps;
 		std::unordered_map<int, Action1Component> m_action1Comps;
 
 		std::vector<int> m_deathRow;

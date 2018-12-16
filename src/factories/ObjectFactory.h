@@ -14,7 +14,9 @@ namespace ObjectFactory
 
 	void createTile(int objId,
 		std::unordered_map<int, PositionComponent>& pos,
-		std::unordered_map<int, GraphicsComponent>& gra);
+		std::unordered_map<int, GraphicsComponent>& gra,
+		std::unordered_map<int, CollisionComponent>& col,
+		std::unordered_map<int, HealthComponent>& hea);
 
 	void createPlayer(int objId,
 		std::unordered_map<int, PositionComponent>& pos,
@@ -27,5 +29,7 @@ namespace ObjectFactory
 		std::unordered_map<int, PositionComponent>& pos,
 		std::unordered_map<int, MotionComponent>& mot,
 		std::unordered_map<int, AgeComponent>& age,
-		std::unordered_map<int, GraphicsComponent>& gra);
+		std::unordered_map<int, GraphicsComponent>& gra,
+		std::unordered_map<int, CollisionComponent>& col,
+		std::unordered_map<int, HealthComponent>& hea);
 };

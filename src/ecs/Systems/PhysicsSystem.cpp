@@ -3,6 +3,7 @@
 #include <SFML/System/Vector2.hpp>
 
 #include "../../utils/VectorMath.h"
+#include "../../math/Collision.h"
 
 namespace PhysicsSystem
 {
@@ -42,19 +43,52 @@ namespace PhysicsSystem
 						if (i == objId)
 							continue;
 
-						const float MIN_DISTANCE = col[objId].width/2.0f + col[i].width/2.0f;
-						sf::Vector2f centerA = sf::Vector2f(newX, newY);
-						sf::Vector2f centerB = sf::Vector2f(pos[i].x, pos[i].y);
+						bool collided = false;
 
-						sf::Vector2f distVec = centerA - centerB;
-
-						float dist = VectorMath::getMagnitude(distVec);
-						float collisionDepth = MIN_DISTANCE - dist;
-						if (collisionDepth > 0) // COLLISION
+						if (col[objId].shape == Shape::Circle && col[i].shape == Shape::Circle)
 						{
+							CircleShape c1;
+							c1.position = sf::Vector2f(newX, newY);
+							c1.radius = col[objId].width/2.0f;
+
+							CircleShape c2;
+							c2.position = sf::Vector2f(pos[i].x, pos[i].y);
+							c2.radius = col[i].width/2.0f;
+
+							collided = Collision::circleCircle(c1, c2);
+						}
+						else if (col[objId].shape == Shape::Circle && col[i].shape == Shape::Rectangle)
+						{
+							CircleShape c;
+							c.position = sf::Vector2f(newX, newY);
+							c.radius = col[objId].width/2.0f;
+
+							RectangleShape r;
+							r.position = sf::Vector2f(pos[i].x, pos[i].y);
+							r.width = col[i].width;
+							r.height = col[i].height;
+
+							collided = Collision::circleRect(c, r);
+						}
+						else if (col[objId].shape == Shape::Rectangle && col[i].shape == Shape::Circle)
+						{
+							RectangleShape r;
+							r.position = sf::Vector2f(newX, newY);
+							r.width = col[objId].width;
+							r.height = col[objId].height;
+
+							CircleShape c;
+							c.position = sf::Vector2f(pos[i].x, pos[i].y);
+							c.radius = col[i].width/2.0f;
+
+							collided = Collision::circleRect(c, r);
+						}
+
+						if (collided)
+						{	
 							if (hea.find(objId) != hea.end())
 							{
-								// inflict damage to object 1
+								// inflict damage to object
 								hea[objId].currentHealth -= 1; // some basic damage value for now
 							}
 
@@ -63,14 +97,11 @@ namespace PhysicsSystem
 								hea[i].currentHealth -= 1;
 							}
 
-							//noramlize depth vector
-							sf::Vector2f depthVec = VectorMath::normalize(distVec) * collisionDepth;
-							
-							pos[objId].x += depthVec.x;
-							pos[objId].y += depthVec.y;
+							pos[objId].x += motion.second.velocity.x * -1.0f;
+							pos[objId].y += motion.second.velocity.y * -1.0f;
 
-							mot[objId].velocity.x *= -0.25f;
-							mot[objId].velocity.y *= -0.25f;
+							mot[objId].velocity.x *= -0.2f;
+							mot[objId].velocity.y *= -0.2f;
 						}
 					}
 				}

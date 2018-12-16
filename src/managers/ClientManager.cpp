@@ -93,7 +93,7 @@ void ClientManager::draw(sf::UdpSocket& socket, sf::Packet& packet,
 			if (pos.find(oId) != pos.end())
 			{
 				// send whole list of objects in one package?
-				packet << header << oId << pos[oId].x << pos[oId].y << graphic.second.width << graphic.second.shape << graphic.second.color.r << graphic.second.color.g << graphic.second.color.b;
+				packet << header << oId << pos[oId].x << pos[oId].y << graphic.second.width << graphic.second.height << graphic.second.shape << graphic.second.color.r << graphic.second.color.g << graphic.second.color.b;
 				socket.send(packet, client.second.address, client.second.port);
 				packet.clear();
 			}
