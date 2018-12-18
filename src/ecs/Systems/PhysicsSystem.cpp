@@ -2,7 +2,7 @@
 
 #include <SFML/System/Vector2.hpp>
 
-#include "../../utils/VectorMath.h"
+#include "../../math/VectorMath.h"
 #include "../../math/Collision.h"
 
 namespace PhysicsSystem

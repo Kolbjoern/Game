@@ -2,7 +2,7 @@
 
 #include "../../data/Actions.h"
 #include "../../factories/ObjectFactory.h"
-#include "../../utils/VectorMath.h"
+#include "../../math/VectorMath.h"
 
 namespace ActionSystem
 {
