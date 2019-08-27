@@ -47,4 +47,15 @@ namespace Collision
 
 		return (cornerDist <= (circle.radius * circle.radius));
 	}
+
+	bool rectRect(RectangleShape& rect1, RectangleShape& rect2)
+	{
+		if (rect1.position.x + rect1.width >= rect2.position.x &&
+			rect1.position.x <= rect2.position.x + rect2.width &&
+			rect1.position.y + rect1.height >= rect2.position.y &&
+			rect1.position.y <= rect2.position.y + rect2.height)
+			return true;
+
+		return false;
+	}
 };

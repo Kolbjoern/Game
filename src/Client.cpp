@@ -36,14 +36,13 @@ void Client::init()
 	std::cout << "server ip: ";
 	//std::string input;
 	//std::getline(std::cin, input);
-	m_serverIp = "10.0.0.29";
+	m_serverIp = "10.0.0.2";
 
 	//register to server
 	sf::Uint8 header = static_cast<int>(NetHeader::Register);
 	m_packet << header;
 	m_socket.send(m_packet, m_serverIp, 9966);
 	m_packet.clear();
-
 	//waiting for server to register us
 	sf::IpAddress sender;
 	unsigned short port;

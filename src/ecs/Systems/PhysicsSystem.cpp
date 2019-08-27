@@ -83,6 +83,20 @@ namespace PhysicsSystem
 
 							collided = Collision::circleRect(c, r);
 						}
+						else if (col[objId].shape == Shape::Rectangle && col[i].shape == Shape::Rectangle)
+						{
+							RectangleShape r1;
+							r1.position = sf::Vector2f(newX, newY);
+							r1.width = col[objId].width;
+							r1.height = col[objId].height;
+
+							RectangleShape r2;
+							r2.position = sf::Vector2f(pos[i].x, pos[i].y);
+							r2.width = col[i].width;
+							r2.height = col[i].height;
+
+							collided = Collision::rectRect(r1, r2);
+						}
 
 						if (collided)
 						{	

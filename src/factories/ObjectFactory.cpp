@@ -82,14 +82,16 @@ namespace ObjectFactory
 		mot.emplace(objId, m);
 
 		GraphicsComponent g;
-		g.width = 50.0f;
-		g.shape = Shape::Circle;
+		g.width = 25.0f;
+		g.height = 25.0f;
+		g.shape = Shape::Rectangle;
 		g.color = sf::Color(255.0f, 50.0f, 60.0f);
 		gra.emplace(objId, g);
 
 		CollisionComponent c;
-		c.width = 50.0f;
-		c.shape = Shape::Circle;
+		c.width = 25.0f;
+		c.height = 25.0f;
+		c.shape = Shape::Rectangle;
 		col.emplace(objId, c);
 
 		Action1Component a1;
