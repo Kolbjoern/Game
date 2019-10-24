@@ -8,8 +8,7 @@
 
 void ClientManager::receive(int& objectCounter, sf::UdpSocket& socket, sf::Packet& packet,
 	std::unordered_map<int, PositionComponent>& pos, std::unordered_map<int, MotionComponent>& mot,
-	std::unordered_map<int, GraphicsComponent>& gra, std::unordered_map<int, CollisionComponent>& col,
-	std::unordered_map<int, Action1Component>& act1)
+	std::unordered_map<int, ShapeComponent>& sha, std::unordered_map<int, Action1Component>& act1)
 {
 	sf::IpAddress sender;
 	unsigned short port;
@@ -31,7 +30,7 @@ void ClientManager::receive(int& objectCounter, sf::UdpSocket& socket, sf::Packe
 				{
 					std::cout << "New client registered: " << sender.toString() << "::" << port << std::endl;
 					objId = objectCounter++;
-					ObjectFactory::createPlayer(objId, pos, mot, gra, col, act1);
+					ObjectFactory::createPlayer(objId, pos, mot, sha, act1);
 					setObjectToClient(sender, port, objId);
 				}
 				else
@@ -81,19 +80,19 @@ void ClientManager::receive(int& objectCounter, sf::UdpSocket& socket, sf::Packe
 }
 
 void ClientManager::draw(sf::UdpSocket& socket, sf::Packet& packet,
-	std::unordered_map<int, PositionComponent>& pos, std::unordered_map<int, GraphicsComponent>& gra)
+	std::unordered_map<int, PositionComponent>& pos, std::unordered_map<int, ShapeComponent>& sha)
 {
 	int oId;
 	sf::Uint8 header = static_cast<int>(NetHeader::Draw);
-	for (std::pair<int, GraphicsComponent> graphic : gra)
+	for (std::pair<int, ShapeComponent> shape : sha)
 	{
-		oId = graphic.first;
+		oId = shape.first;
 		for (std::pair<std::string, ClientInfo> client : m_clients)
 		{
 			if (pos.find(oId) != pos.end())
 			{
 				// send whole list of objects in one package?
-				packet << header << oId << pos[oId].x << pos[oId].y << graphic.second.width << graphic.second.height << graphic.second.shape << graphic.second.color.r << graphic.second.color.g << graphic.second.color.b;
+				packet << header << oId << pos[oId].x << pos[oId].y << shape.second.width << shape.second.currentData << shape.second.color.r << shape.second.color.g << shape.second.color.b;
 				socket.send(packet, client.second.address, client.second.port);
 				packet.clear();
 			}

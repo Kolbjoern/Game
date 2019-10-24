@@ -3,14 +3,13 @@
 #include <SFML/System/Vector2.hpp>
 
 #include "../../math/VectorMath.h"
-#include "../../math/Collision.h"
 
 namespace PhysicsSystem
 {
 	void update(float deltaTime,
 				std::unordered_map<int, PositionComponent>& pos,
 				std::unordered_map<int, MotionComponent>& mot,
-				std::unordered_map<int, CollisionComponent>& col,
+				std::unordered_map<int, ShapeComponent>& sha,
 				std::unordered_map<int, HealthComponent>& hea)
 	{
 		int objId;
@@ -34,7 +33,7 @@ namespace PhysicsSystem
 				pos[objId].x = newX;
 				pos[objId].y = newY;
 
-				if (col.find(objId) != col.end())
+				/*if (col.find(objId) != col.end())
 				{
 					for (std::pair<int, CollisionComponent> collision : col)
 					{
@@ -118,7 +117,7 @@ namespace PhysicsSystem
 							mot[objId].velocity.y *= -0.2f;
 						}
 					}
-				}
+				}*/
 
 				// slow down
 				mot[objId].velocity.x *= (1 - motion.second.friction);

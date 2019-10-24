@@ -18,12 +18,11 @@ class ClientManager
 {
 	public:
 		void receive(int& objectCounter, sf::UdpSocket& socket, sf::Packet& packet,
-				std::unordered_map<int, PositionComponent>& pos, std::unordered_map<int, MotionComponent>& mot,
-				std::unordered_map<int, GraphicsComponent>& gra, std::unordered_map<int, CollisionComponent>& col,
-				std::unordered_map<int, Action1Component>& act1);
+				std::unordered_map<int, PositionComponent>& pos, std::unordered_map<int, MotionComponent>& mot,	
+				std::unordered_map<int, ShapeComponent>& sha, std::unordered_map<int, Action1Component>& act1);
 
 		void draw(sf::UdpSocket& socket, sf::Packet& packet,
-				std::unordered_map<int, PositionComponent>& pos, std::unordered_map<int, GraphicsComponent>& gra);
+				std::unordered_map<int, PositionComponent>& pos, std::unordered_map<int, ShapeComponent>& sha);
 
 		void destroyObject(int objectId, sf::UdpSocket& socket, sf::Packet& packet);
 

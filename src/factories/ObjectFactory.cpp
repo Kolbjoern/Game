@@ -4,8 +4,7 @@ namespace ObjectFactory
 {
 	void createTestObstacle(int objId,
 		std::unordered_map<int, PositionComponent>& pos,
-		std::unordered_map<int, GraphicsComponent>& gra,
-		std::unordered_map<int, CollisionComponent>& col,
+		std::unordered_map<int, ShapeComponent>& sha,
 		std::unordered_map<int, HealthComponent>& hea)
 	{
 		PositionComponent p;
@@ -13,18 +12,12 @@ namespace ObjectFactory
 		p.y = 350.0f;
 		pos.emplace(objId, p);
 
-		GraphicsComponent g;
-		g.width = 400.0f;
-		g.height = 200.0f;
-		g.shape = Shape::Rectangle;
-		g.color = sf::Color(255.0f, 255.0f, 255.0f);
-		gra.emplace(objId, g);
-
-		CollisionComponent c;
-		c.width = 400.0f;
-		c.height = 200.0f;
-		c.shape = Shape::Rectangle;
-		col.emplace(objId, c);
+		ShapeComponent s;
+		s.data = "1111100110011111";
+		s.currentData = "1111100110011111";
+		s.width = 4;
+		s.color = sf::Color(255.0f, 255.0f, 255.0f);
+		sha.emplace(objId, s);
 
 		HealthComponent h;
 		h.maxHealth = 3;
@@ -34,8 +27,7 @@ namespace ObjectFactory
 
 	void createTile(int objId,
 		std::unordered_map<int, PositionComponent>& pos,
-		std::unordered_map<int, GraphicsComponent>& gra,
-		std::unordered_map<int, CollisionComponent>& col,
+		std::unordered_map<int, ShapeComponent>& sha,
 		std::unordered_map<int, HealthComponent>& hea)
 	{
 		PositionComponent p;
@@ -43,18 +35,11 @@ namespace ObjectFactory
 		p.y = 0.0f;
 		pos.emplace(objId, p);
 
-		GraphicsComponent g;
-		g.width = 8.0f;
-		g.height = 8.0f;
-		g.shape = Shape::Rectangle;
-		g.color = sf::Color(255.0f, 255.0f, 255.0f);
-		gra.emplace(objId, g);
-
-		CollisionComponent c;
-		c.width = 8.0f;
-		c.height = 8.0f;
-		c.shape = Shape::Rectangle;
-		col.emplace(objId, c);
+		ShapeComponent s;
+		s.data = "1";
+		s.currentData = "1";
+		s.width = 1;
+		s.color = sf::Color(255.0f, 255.0f, 255.0f);
 
 		HealthComponent h;
 		h.maxHealth = 2;
@@ -65,8 +50,7 @@ namespace ObjectFactory
 	void createPlayer(int objId,
 		std::unordered_map<int, PositionComponent>& pos,
 		std::unordered_map<int, MotionComponent>& mot,
-		std::unordered_map<int, GraphicsComponent>& gra,
-		std::unordered_map<int, CollisionComponent>& col,
+		std::unordered_map<int, ShapeComponent>& sha,
 		std::unordered_map<int, Action1Component>& act1)
 	{
 		PositionComponent p;
@@ -81,18 +65,12 @@ namespace ObjectFactory
 		m.friction = 0.06f;
 		mot.emplace(objId, m);
 
-		GraphicsComponent g;
-		g.width = 25.0f;
-		g.height = 25.0f;
-		g.shape = Shape::Rectangle;
-		g.color = sf::Color(255.0f, 50.0f, 60.0f);
-		gra.emplace(objId, g);
-
-		CollisionComponent c;
-		c.width = 25.0f;
-		c.height = 25.0f;
-		c.shape = Shape::Rectangle;
-		col.emplace(objId, c);
+		ShapeComponent s;
+		s.data = "1111";
+		s.currentData = "1111";
+		s.width = 2;
+		s.color = sf::Color(255.0f, 50.0f, 60.0f);
+		sha.emplace(objId, s);
 
 		Action1Component a1;
 		a1.id = 11;
@@ -106,8 +84,7 @@ namespace ObjectFactory
 		std::unordered_map<int, PositionComponent>& pos,
 		std::unordered_map<int, MotionComponent>& mot,
 		std::unordered_map<int, AgeComponent>& age,
-		std::unordered_map<int, GraphicsComponent>& gra,
-		std::unordered_map<int, CollisionComponent>& col,
+		std::unordered_map<int, ShapeComponent>& sha,
 		std::unordered_map<int, HealthComponent>& hea)
 	{
 		PositionComponent p;
@@ -127,16 +104,12 @@ namespace ObjectFactory
 		a.lifeLived = 0.0f;
 		age.emplace(objId, a);
 
-		GraphicsComponent g;
-		g.width = 15.0f;
-		g.shape = Shape::Circle;
-		g.color = sf::Color(10.0f, 255.0f, 50.0f);
-		gra.emplace(objId, g);
-
-		CollisionComponent c;
-		c.width = 15.0f;
-		c.shape = Shape::Circle;
-		col.emplace(objId, c);
+		ShapeComponent s;
+		s.data = "1";
+		s.currentData = "1";
+		s.width = 1;
+		s.color = sf::Color(10.0f, 255.0f, 50.0f);
+		sha.emplace(objId, s);
 
 		HealthComponent h;
 		h.maxHealth = 1;

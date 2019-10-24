@@ -52,7 +52,7 @@ void Server::init()
 	int index;
 	int tileObjId;
 	int tileSize = m_map.tileSize;
-	for (int x = 0; x < m_map.width; x++)
+	/*for (int x = 0; x < m_map.width; x++)
 	{
 		for (int y = 0; y < m_map.height; y++)
 		{
@@ -71,11 +71,11 @@ void Server::init()
 			m_graphicsComps[tileObjId].width = tileSize;
 			m_graphicsComps[tileObjId].height = tileSize;
 		}
-	}
+	}*/
 
 	// OSTACLE FOR COLLISION TESTING
 	int objId = m_currentObjectId++;
-	ObjectFactory::createTestObstacle(objId, m_positionComps, m_graphicsComps, m_collisionComps, m_healthComps);
+	ObjectFactory::createTestObstacle(objId, m_positionComps, m_shapeComps, m_healthComps);
 
 	std::cout << "SERVER::INITIALIZED" << std::endl;
 	std::cout << "HOST ADDRESS:" << std::endl;
@@ -85,13 +85,13 @@ void Server::init()
 
 void Server::update(float deltaTime)
 {
-	m_clientManager.receive(m_currentObjectId, m_socket, m_packet, m_positionComps, m_motionComps, m_graphicsComps, m_collisionComps, m_action1Comps);
+	m_clientManager.receive(m_currentObjectId, m_socket, m_packet, m_positionComps, m_motionComps, m_shapeComps, m_action1Comps);
 
-	ActionSystem::update(deltaTime, m_currentObjectId, m_action1Comps, m_positionComps, m_motionComps, m_ageComps, m_graphicsComps, m_collisionComps, m_healthComps);
-	PhysicsSystem::update(deltaTime, m_positionComps, m_motionComps, m_collisionComps, m_healthComps);
+	ActionSystem::update(deltaTime, m_currentObjectId, m_action1Comps, m_positionComps, m_motionComps, m_ageComps, m_shapeComps, m_healthComps);
+	PhysicsSystem::update(deltaTime, m_positionComps, m_motionComps, m_shapeComps, m_healthComps);
 	DeathSystem::update(deltaTime, m_deathRow, m_ageComps, m_healthComps);
 
-	m_clientManager.draw(m_socket, m_packet, m_positionComps, m_graphicsComps);
+	m_clientManager.draw(m_socket, m_packet, m_positionComps, m_shapeComps);
 }
 
 void Server::purgeTheDead()
@@ -101,8 +101,7 @@ void Server::purgeTheDead()
 		int id = m_deathRow[i];
 		m_positionComps.erase(id);
 		m_motionComps.erase(id);
-		m_graphicsComps.erase(id);
-		m_collisionComps.erase(id);
+		m_shapeComps.erase(id);
 		m_ageComps.erase(id);
 		m_healthComps.erase(id);
 		m_action1Comps.erase(id);

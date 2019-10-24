@@ -8,15 +8,15 @@ enum Shape
 	Rectangle = 1
 };
 
-struct CircleShape
-{
-	sf::Vector2f position;
-	float radius;
-};
+// struct CircleShape
+// {
+// 	sf::Vector2f position;
+// 	float radius;
+// };
 
-struct RectangleShape
-{
-	sf::Vector2f position;
-	float width;
-	float height;
-};
+// struct RectangleShape
+// {
+// 	sf::Vector2f position;
+// 	float width;
+// 	float height;
+// };

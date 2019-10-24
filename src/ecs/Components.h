@@ -5,6 +5,8 @@
 
 #include "../math/Geometry.h"
 
+#include <string>
+
 struct PositionComponent
 {
 	float x;
@@ -19,19 +21,12 @@ struct MotionComponent
 	float friction;
 };
 
-struct GraphicsComponent
+struct ShapeComponent
 {
-	float width;
-	float height;
-	Shape shape;
+	std::string data;
+	std::string currentData;
+	int width;
 	sf::Color color;
-};
-
-struct CollisionComponent
-{
-	float width;
-	float height;
-	Shape shape;
 };
 
 struct AgeComponent

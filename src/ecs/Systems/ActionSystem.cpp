@@ -11,8 +11,7 @@ namespace ActionSystem
 				std::unordered_map<int, PositionComponent>& pos,
 				std::unordered_map<int, MotionComponent>& mot,
 				std::unordered_map<int, AgeComponent>& age,
-				std::unordered_map<int, GraphicsComponent>& gra,
-				std::unordered_map<int, CollisionComponent>& col,
+				std::unordered_map<int, ShapeComponent>& sha,
 				std::unordered_map<int, HealthComponent>& hea)
 	{
 		int objId;
@@ -36,13 +35,12 @@ namespace ActionSystem
 
 						int projectileId = counter++;
 
-						ObjectFactory::createProjectile(projectileId, pos, mot, age, gra, col, hea);
-						pos[projectileId].x = gunslingerPos.x + normalized.x*col[objId].width;
-						pos[projectileId].y = gunslingerPos.y + normalized.y*col[objId].width;
+						ObjectFactory::createProjectile(projectileId, pos, mot, age, sha, hea);
+						pos[projectileId].x = gunslingerPos.x + normalized.x*25.0f;
+						pos[projectileId].y = gunslingerPos.y + normalized.y*25.0f;
 						mot[projectileId].direction = normalized;
 						mot[projectileId].speed = shootBasic.bulletSpeed;
 						age[projectileId].lifeTime = shootBasic.lifeTime;
-						gra[projectileId].width = shootBasic.bulletWidth;
 					}
 					act1[objId].triggered = false;
 				}

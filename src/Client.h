@@ -1,9 +1,9 @@
 #pragma once
 
 #include <unordered_map>
+#include <string>
 
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Network.hpp>
 
@@ -13,9 +13,8 @@ struct DrawableObject
 {
 	float x;
 	float y;
-	float width;
-	float height;
-	int shape;
+	int width;
+	std::string data;
 	sf::Color color;
 };
 

@@ -12,7 +12,6 @@ namespace ActionSystem
 				std::unordered_map<int, PositionComponent>& pos,
 				std::unordered_map<int, MotionComponent>& mot,
 				std::unordered_map<int, AgeComponent>& age,
-				std::unordered_map<int, GraphicsComponent>& gra,
-				std::unordered_map<int, CollisionComponent>& col,
+				std::unordered_map<int, ShapeComponent>& sha,
 				std::unordered_map<int, HealthComponent>& hea);
 };
