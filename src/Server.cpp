@@ -48,10 +48,10 @@ void Server::init()
 	m_map.tileData[7] = 1;
 	m_map.tileData[8] = 1;
 
-	int index;
+	/*int index;
 	int tileObjId;
 	int tileSize = m_map.tileSize;
-	/*for (int x = 0; x < m_map.width; x++)
+	for (int x = 0; x < m_map.width; x++)
 	{
 		for (int y = 0; y < m_map.height; y++)
 		{
@@ -97,7 +97,7 @@ void Server::update(float deltaTime)
 
 void Server::purgeTheDead()
 {
-	for (int i = 0; i < m_deathRow.size(); i++) {
+	for (unsigned int i = 0; i < m_deathRow.size(); i++) {
 		int id = m_deathRow[i];
 		m_positionComps.erase(id);
 		m_motionComps.erase(id);

@@ -42,7 +42,7 @@ void ClientManager::receive(int& objectCounter, sf::UdpSocket& socket, sf::Packe
 				packet.clear();
 				break;
 
-			case NetHeader::Action:
+			case NetHeader::Action:{
 				sf::Uint8 action;
 				sf::Vector2f direction;
 				packet >> action;
@@ -64,11 +64,18 @@ void ClientManager::receive(int& objectCounter, sf::UdpSocket& socket, sf::Packe
 					if (movement & 8)
 						direction.y = 1.0f;
 				}
-				else
+				else {
 					packet >> direction.x >> direction.y;
+				}
 
 				registerInput(sender, port, action, direction, mot, act1);
 				packet.clear();
+				break;
+			}
+
+			case NetHeader::Draw:
+			case NetHeader::Death:
+			case NetHeader::Assign:
 				break;
 		}
 	}
