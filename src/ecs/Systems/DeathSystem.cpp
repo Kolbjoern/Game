@@ -7,8 +7,7 @@ namespace DeathSystem
 				std::unordered_map<int, HealthComponent>& hea)
 	{
 		int oId;
-		for (std::pair<int, AgeComponent> currentAge : age)
-		{
+		for (std::pair<int, AgeComponent> currentAge : age) {
 			oId = currentAge.first;
 
 			if (currentAge.second.lifeLived > currentAge.second.lifeTime)
@@ -17,8 +16,7 @@ namespace DeathSystem
 				age[oId].lifeLived += deltaTime;
 		}
 
-		for (std::pair<int, HealthComponent> health : hea)
-		{
+		for (std::pair<int, HealthComponent> health : hea) {
 			oId = health.first;
 
 			if (health.second.currentHealth <= 0)

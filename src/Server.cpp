@@ -13,8 +13,7 @@ void Server::run()
 {
 	init();
 
-	while (true)
-	{
+	while (true) {
 		m_loopTimer.tick();
 		float iterationTime = m_loopTimer.getDeltaTime();
 
@@ -85,9 +84,11 @@ void Server::init()
 
 void Server::update(float deltaTime)
 {
-	m_clientManager.receive(m_currentObjectId, m_socket, m_packet, m_positionComps, m_motionComps, m_shapeComps, m_action1Comps);
+	m_clientManager.receive(m_currentObjectId, m_socket, m_packet, m_positionComps, m_motionComps, m_shapeComps, 
+		m_action1Comps);
 
-	ActionSystem::update(deltaTime, m_currentObjectId, m_action1Comps, m_positionComps, m_motionComps, m_ageComps, m_shapeComps, m_healthComps);
+	ActionSystem::update(deltaTime, m_currentObjectId, m_action1Comps, m_positionComps, m_motionComps, 
+		m_ageComps, m_shapeComps, m_healthComps);
 	PhysicsSystem::update(deltaTime, m_positionComps, m_motionComps, m_shapeComps, m_healthComps);
 	DeathSystem::update(deltaTime, m_deathRow, m_ageComps, m_healthComps);
 
@@ -96,8 +97,7 @@ void Server::update(float deltaTime)
 
 void Server::purgeTheDead()
 {
-	for (int i = 0; i < m_deathRow.size(); i++)
-	{
+	for (int i = 0; i < m_deathRow.size(); i++) {
 		int id = m_deathRow[i];
 		m_positionComps.erase(id);
 		m_motionComps.erase(id);

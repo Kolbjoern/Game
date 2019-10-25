@@ -13,8 +13,7 @@ namespace PhysicsSystem
 				std::unordered_map<int, HealthComponent>& hea)
 	{
 		int objId;
-		for (std::pair<int, MotionComponent> motion : mot)
-		{
+		for (std::pair<int, MotionComponent> motion : mot) {
 			objId = motion.first;
 
 			// add acceleration direction
@@ -24,8 +23,7 @@ namespace PhysicsSystem
 			// reset direction
 			mot[objId].direction = sf::Vector2f(0.0f, 0.0f);
 
-			if (pos.find(objId) != pos.end())
-			{
+			if (pos.find(objId) != pos.end()) {
 				float newX = pos[objId].x + motion.second.velocity.x;
 				float newY = pos[objId].y + motion.second.velocity.y;
 			

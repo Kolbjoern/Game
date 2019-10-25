@@ -12,13 +12,11 @@ int main(int argv, char* argc[])
 	std::string input;
 	std::getline(std::cin, input);
 
-	if (input == "1")
-	{
+	if (input == "1") {
 		Server server;
 		server.run();
 	}
-	else
-	{
+	else {
 		Client client;
 		client.run();
 	}

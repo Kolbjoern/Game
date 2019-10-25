@@ -15,26 +15,22 @@ void ClientManager::receive(int& objectCounter, sf::UdpSocket& socket, sf::Packe
 	sf::Uint8 header;
 
 	// empty receive buffer
-	while (socket.receive(packet, sender, port) == sf::Socket::Done)
-	{
+	while (socket.receive(packet, sender, port) == sf::Socket::Done) {
 		packet >> header;
 
-		switch (static_cast<NetHeader>(header))
-		{
+		switch (static_cast<NetHeader>(header)) {
 			// TODO: init registration before the game starts
 			case NetHeader::Register:
 				packet.clear();
 
 				int objId;
-				if (registerClient(sender, port))
-				{
+				if (registerClient(sender, port)) {
 					std::cout << "New client registered: " << sender.toString() << "::" << port << std::endl;
 					objId = objectCounter++;
 					ObjectFactory::createPlayer(objId, pos, mot, sha, act1);
 					setObjectToClient(sender, port, objId);
 				}
-				else
-				{
+				else {
 					std::cout << "Client rejoined: " << sender.toString() << "::" << port << std::endl;
 					objId = getClientObject(sender, port);
 				}
@@ -51,8 +47,7 @@ void ClientManager::receive(int& objectCounter, sf::UdpSocket& socket, sf::Packe
 				sf::Vector2f direction;
 				packet >> action;
 
-				if (action == 10)
-				{
+				if (action == 10) {
 					sf::Uint8 move;
 					packet >> move;
 					int movement = static_cast<int>(move);
@@ -84,15 +79,14 @@ void ClientManager::draw(sf::UdpSocket& socket, sf::Packet& packet,
 {
 	int oId;
 	sf::Uint8 header = static_cast<int>(NetHeader::Draw);
-	for (std::pair<int, ShapeComponent> shape : sha)
-	{
+	for (std::pair<int, ShapeComponent> shape : sha) {
 		oId = shape.first;
-		for (std::pair<std::string, ClientInfo> client : m_clients)
-		{
-			if (pos.find(oId) != pos.end())
-			{
+		for (std::pair<std::string, ClientInfo> client : m_clients) {
+			if (pos.find(oId) != pos.end()) {
 				// send whole list of objects in one package?
-				packet << header << oId << pos[oId].x << pos[oId].y << shape.second.width << shape.second.currentData << shape.second.color.r << shape.second.color.g << shape.second.color.b;
+				packet << header << oId << pos[oId].x << pos[oId].y << shape.second.width 
+					<< shape.second.currentData << shape.second.color.r << shape.second.color.g 
+					<< shape.second.color.b;
 				socket.send(packet, client.second.address, client.second.port);
 				packet.clear();
 			}
@@ -104,8 +98,7 @@ void ClientManager::destroyObject(int objectId, sf::UdpSocket& socket, sf::Packe
 {
 	sf::Uint8 header = static_cast<int>(NetHeader::Death);
 	packet << header << objectId;
-	for (std::pair<std::string, ClientInfo> client : m_clients)
-	{
+	for (std::pair<std::string, ClientInfo> client : m_clients) {
 		socket.send(packet, client.second.address, client.second.port);
 	}
 	packet.clear();
@@ -114,8 +107,9 @@ void ClientManager::destroyObject(int objectId, sf::UdpSocket& socket, sf::Packe
 bool ClientManager::registerClient(sf::IpAddress& address, unsigned short port)
 {
 	std::string uniqueId = getUniqueId(address, port);
-	if (clientExists(uniqueId))
+	if (clientExists(uniqueId)) {
 		return false;
+	}
 
 	ClientInfo info;
 	info.address = address;
@@ -132,23 +126,23 @@ void ClientManager::registerInput(sf::IpAddress& address, unsigned short port,
 									std::unordered_map<int, Action1Component>& act1)
 {
 	std::string uniqueId = getUniqueId(address, port);
-	if (!clientExists(uniqueId))
+	if (!clientExists(uniqueId)) {
 		return;
+	}
 
 	int oId = m_clients[uniqueId].objectId;
 
-	switch (static_cast<int>(action))
-	{
+	switch (static_cast<int>(action)) {
 		// MOVE
 		case 10:
-			if (mot.find(oId) != mot.end())
+			if (mot.find(oId) != mot.end()) {
 				mot[oId].direction = direction;
+			}
 			break;
 
 		// ACTIONS
 		case 20:
-			if (act1.find(oId) != act1.end())
-			{
+			if (act1.find(oId) != act1.end()) {
 				// enable more actions to fill the action slots
 				act1[oId].vector = direction;
 				act1[oId].triggered = true;
@@ -160,8 +154,9 @@ void ClientManager::registerInput(sf::IpAddress& address, unsigned short port,
 void ClientManager::setObjectToClient(sf::IpAddress& address, unsigned short port, int objectId)
 {
 	std::string uniqueId = getUniqueId(address, port);
-	if (!clientExists(uniqueId))
+	if (!clientExists(uniqueId)) {
 		return;
+	}
 
 	m_clients[uniqueId].objectId = objectId;
 }

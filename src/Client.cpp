@@ -11,8 +11,7 @@ void Client::run()
 {
 	init();
 
-	while (m_window.isOpen())
-	{
+	while (m_window.isOpen()) {
 		m_loopTimer.tick();
 
 		handleInput();
@@ -27,8 +26,9 @@ void Client::init()
 	// bind socket used for connection with server
 	sf::Socket::Status status;
 	status = m_socket.bind(sf::Socket::AnyPort);
-	if (status != sf::Socket::Done)
+	if (status != sf::Socket::Done) {
 		std::cout << "Could not bind socket" << std::endl;
+	}
 
 	std::cout << "bound to:: " << m_socket.getLocalPort() << std::endl;
 
@@ -48,12 +48,12 @@ void Client::init()
 	unsigned short port;
 	std::cout << "waiting for response..." << std::endl;
 	status = m_socket.receive(m_packet, sender, port);
-	if (status != sf::Socket::Done)
+	if (status != sf::Socket::Done) {
 		std::cout << "Could not register to server" << std::endl;
+	}
 
 	m_packet >> header;
-	if (static_cast<NetHeader>(header) == NetHeader::Assign)
-	{
+	if (static_cast<NetHeader>(header) == NetHeader::Assign) {
 		m_packet >> m_myObject;
 		std::cout << "Assign to object: " << m_myObject << std::endl;
 	}
@@ -72,10 +72,8 @@ void Client::init()
 void Client::handleInput()
 {
 	sf::Event event;
-	while (m_window.pollEvent(event))
-	{
-		switch (event.type)
-		{
+	while (m_window.pollEvent(event)) {
+		switch (event.type) {
 			case sf::Event::Closed:
 				m_window.close();
 				break;
@@ -92,20 +90,23 @@ void Client::update(float deltaTime)
 {
 	sf::Uint8 movement = 0;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
 		movement += 1;
+	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
 		movement += 2;
+	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 		movement += 4;
+	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
 		movement += 8;
+	}
 
-	if (movement != 0)
-	{
+	if (movement != 0) {
 		sf::Uint8 header = static_cast<int>(NetHeader::Action);
 		sf::Uint8 action = 10;
 		m_packet << header << action << movement;
@@ -113,10 +114,11 @@ void Client::update(float deltaTime)
 		m_packet.clear();
 	}
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-	{
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		sf::Vector2i windowPosition = sf::Mouse::getPosition(m_window);
-		sf::Vector2f mouseDirection = sf::Vector2f(windowPosition.x + m_camera.getCenter().x - m_camera.getSize().x / 2, windowPosition.y + m_camera.getCenter().y - m_camera.getSize().y / 2);
+		sf::Vector2f mouseDirection = sf::Vector2f(
+			windowPosition.x + m_camera.getCenter().x - m_camera.getSize().x / 2, 
+			windowPosition.y + m_camera.getCenter().y - m_camera.getSize().y / 2);
 		
 		sf::Uint8 header = static_cast<int>(NetHeader::Action);
 		sf::Uint8 action = 20;
@@ -134,14 +136,13 @@ void Client::receive()
 	int objectId;
 	DrawableObject obj;
 
-	while (m_socket.receive(m_packet, sender, port) == sf::Socket::Done)
-	{
+	while (m_socket.receive(m_packet, sender, port) == sf::Socket::Done) {
 		m_packet >> header;
 
-		switch (static_cast<NetHeader>(header))
-		{
+		switch (static_cast<NetHeader>(header)) {
 			case NetHeader::Draw:
-				m_packet >> objectId >> obj.x >> obj.y >> obj.width >> obj.data >> obj.color.r >> obj.color.g >> obj.color.b;
+				m_packet >> objectId >> obj.x >> obj.y >> obj.width >> obj.data >> 
+					obj.color.r >> obj.color.g >> obj.color.b;
 				m_drawableObjects[objectId] = obj;
 				break;
 
@@ -157,20 +158,17 @@ void Client::render()
 {
 	m_window.clear();
 	
-	if (m_drawableObjects.find(m_myObject) != m_drawableObjects.end())
-	{
+	if (m_drawableObjects.find(m_myObject) != m_drawableObjects.end()) {
 		sf::Vector2f pos(m_drawableObjects[m_myObject].x, m_drawableObjects[m_myObject].y);
 
-		if (m_camera.getCenter() != pos)
-		{
+		if (m_camera.getCenter() != pos) {
 			m_camera.setCenter(pos);
 			m_window.setView(m_camera);
 		}
 	}
 
 	sf::RectangleShape rect;
-	for (std::pair<int, DrawableObject> obj : m_drawableObjects)
-	{
+	for (std::pair<int, DrawableObject> obj : m_drawableObjects) {
 		for (int y = 0; y < obj.second.width; y++) {
 			for (int x = 0; x < obj.second.width; x++) {
 				if (obj.second.data[(y * obj.second.width) + x] == '0') {

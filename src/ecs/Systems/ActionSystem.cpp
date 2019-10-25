@@ -15,18 +15,14 @@ namespace ActionSystem
 				std::unordered_map<int, HealthComponent>& hea)
 	{
 		int objId;
-		for (std::pair<int, Action1Component> action : act1)
-		{
+		for (std::pair<int, Action1Component> action : act1) {
 			objId = action.first;
 
 			// SHOOT BASIC
-			if (action.second.id == 11)
-			{
-				if (pos.find(objId) != pos.end())
-				{
+			if (action.second.id == 11) {
+				if (pos.find(objId) != pos.end()) {
 					act1[objId].reloadTimer += deltaTime;
-					if (action.second.triggered && (action.second.reloadTimer > shootBasic.fireRate))
-					{
+					if (action.second.triggered && (action.second.reloadTimer > shootBasic.fireRate)) {
 						act1[objId].reloadTimer = 0.0f;
 
 						sf::Vector2f gunslingerPos = sf::Vector2f(pos[objId].x, pos[objId].y);
